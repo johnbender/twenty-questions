@@ -1,0 +1,9 @@
+* UI
+** editor
+*** left aligned
+*** ace editor - http://ace.c9.io/
+** query progression
+*** right aligned
+*** inline selections/output
+*** back out by selecting previous
+*** hide selected
