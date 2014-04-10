@@ -96,8 +96,8 @@ genReports nInputs candidates = do
 
 -- is input an algebraic data type
 -- special case: don't consider strings or tuples to be ADTs.
-isADT :: Data a => a -> Bool
-isADT a | dataTypeName t == "Prelude.[]" = False
+isADT :: (Data a, Typeable a) => a -> Bool
+isADT a | typeOf a == typeOf "" = False
         | isAlgType t = length (dataTypeConstrs t) > 1
         | otherwise = False
   where t = dataTypeOf a
