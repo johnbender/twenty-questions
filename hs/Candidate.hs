@@ -4,8 +4,9 @@ module Candidate where
 import Control.Exception
 import Test.QuickCheck.Arbitrary
 import Test.QuickCheck.Gen
-import Data.List (sortBy, partition)
+import Data.List
 import Data.Ord (comparing)
+import Data.Function (on)
 import Data.Data
 import Data.Generics.Schemes (gsize)
 import Math.Statistics
@@ -93,3 +94,13 @@ genReports nInputs candidates = do
   inputs <- sample' arbitrary
   mapM (runReport candidates) (take nInputs inputs)
 
+-- is input an algebraic data type
+-- special case: don't consider strings or tuples to be ADTs.
+isADT :: Data a => a -> Bool
+isADT a | dataTypeName t == "Prelude.[]" = False
+        | isAlgType t = length (dataTypeConstrs t) > 1
+        | otherwise = False
+  where t = dataTypeOf a
+
+groupByConstr :: Data a => [a] -> [[a]]
+groupByConstr = groupBy ((==) `on` toConstr)
