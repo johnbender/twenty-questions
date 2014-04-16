@@ -1,7 +1,9 @@
-import Candidate
-
-import Data.List
 import Control.Arrow
+import Data.List
+import qualified Data.ByteString.Lazy.Char8 as BS
+
+import Candidate
+import JSON
 
 candidates = [
     Candidate "head" head
@@ -15,3 +17,5 @@ candidates = [
 
 reports = do
   mapM (runReport candidates) [[],[0],[1],[2],[4,5]]
+
+  
