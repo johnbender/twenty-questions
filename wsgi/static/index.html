@@ -16,12 +16,6 @@
   <body>
     <div id="editor">main = printStrLn "Hello World"</div>
     <div class="card-stack">
-      <div class="card">
-
-      </div>
-      <div class="card">
-        bar
-      </div>
     </div>
 
     <script src="js/vendor/jquery-1.11.0.js"></script>
@@ -34,21 +28,40 @@
     <script src="js/main.js"></script>
     <script type="text/template" id="card-template">
       <div class="card">
-        <div class="first">
+        <div class="left">
+          {{#left}}
           <ul class="results">
             {{#results}}
-              <li>{{ . }}</li>
+            <li>{{ . }}</li>
             {{/results}}
           </ul>
-        </div>
 
-        <div class="second">
           <ul class="names">
             {{#names}}
-              <li>{{ . }}</li>
+            <li>{{ . }}</li>
             {{/names}}
           </ul>
+          {{/left}}
         </div>
+
+        <div class="right">
+          {{#right}}
+          <ul class="results">
+            {{#results}}
+            <li>{{ . }}</li>
+            {{/results}}
+          </ul>
+
+          <ul class="names">
+            {{#names}}
+            <li>{{ . }}</li>
+            {{/names}}
+          </ul>
+          {{/right}}
+        </div>
+
+        <!-- clear both -->
+        <div style="clear: both;"/>
       </div>
     </script>
   </body>

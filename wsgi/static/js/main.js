@@ -7,18 +7,45 @@
 
     var cards = [
       {
-        results: [
-          "foo"
-        ],
-        names: [
-          "bar"
-        ]
+        left: {
+          results: [
+            "foo"
+          ],
+          names: [
+            "bar"
+          ]
+        },
+        right: {
+          results: [
+            "baz"
+          ],
+          names: [
+            "bak"
+          ]
+        }
+      },
+      {
+        left: {
+          results: [
+            "foo"
+          ],
+          names: [
+            "bar"
+          ]
+        },
+        right: {
+          results: [
+            "baz"
+          ],
+          names: [
+            "bak"
+          ]
+        }
       }
     ];
 
     var cardStack = new window.CardStack( cards, $("#card-template").text() );
 
-    debugger;
     $( ".card-stack" ).html( cardStack.render() );
   });
 })( this, jQuery );
