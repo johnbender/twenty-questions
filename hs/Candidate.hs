@@ -102,13 +102,15 @@ runReport candidates input = do
 memoSortBy :: Ord b => (a -> b) -> [a] -> [a]
 memoSortBy f = map snd . sortBy (comparing fst) . map (\r -> (f r, r))
 
-sortReports = memoSortBy repPartitionSizeStdDev . filter ((/=1) . length . repOutputs)
+sortReports :: (Data a, Ord b, Data b) => [Report a b] -> [Report a b]
+sortReports = memoSortBy repScore . filter ((/=1) . length . repOutputs)
 
+bestReport :: (Data a, Ord b, Data b) => [Report a b] -> Report a b
 bestReport = head . sortReports
 
 genReports :: (Arbitrary a, Ord b) => Int -> [Candidate a b] -> IO [Report a b]
 genReports nInputs candidates = do
-  inputs <- sample' arbitrary
+  inputs <- generate $ vectorOf nInputs arbitrary
   mapM (runReport candidates) (take nInputs inputs)
 
 -- is input an algebraic data type
@@ -121,3 +123,5 @@ isADT a | typeOf a == typeOf "" = False
 
 groupByConstr :: Data a => [a] -> [[a]]
 groupByConstr = groupBy ((==) `on` toConstr)
+
+  
