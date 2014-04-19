@@ -1,0 +1,9 @@
+Name:            TwentyQuestions
+Version:         0.1
+Cabal-Version:   >= 1.2
+Build-Type:      Simple
+
+Executable Interactive
+  Main-Is: Interactive.hs
+
+  Build-Depends:  base, unix, hoogle, split, aeson, QuickCheck, syb, ghc, containers, bytestring, multimap, ghc-paths, regex-posix, hstats, haskell-src-exts
