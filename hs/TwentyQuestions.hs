@@ -5,6 +5,7 @@ import JSON
 import Data.Data
 import Test.QuickCheck
 import Text.PrettyPrint.Boxes
+import System.IO
 
 repBox :: (Show a, Show b) => Report a b -> Box
 repBox rep =
@@ -28,15 +29,20 @@ mkOutputBox input num (output, candidates) =
 
 partitionCandidates :: (Arbitrary a, Show a, Data a, Show b, Data b, Ord b) => (a -> b) -> [Candidate a b] -> IO ()
 partitionCandidates _ [] = putStrLn "No candidates."
-partitionCandidates _ [c] = putStrLn "Done."
+partitionCandidates _ [c] = putStrLn $ "Done: " ++ candidateName c
 partitionCandidates f cs = do
   rs <- genReports 1000 cs
   let rs' = sortReports rs
-  -- mapM_ (\r -> print (repScore r) >> print (repAssocs r)) rs'
   let r = bestReport rs
-  --dumpReport r
+
+  -- show report
   printBox $ repBox r
-  putStrLn "enter candidate set number"
+
+  -- prompt for input
+  putStrLn ""
+  putStr "enter candidate set number: "
+  hFlush stdout
   s <- getLine
+  putStrLn ""
+
   partitionCandidates f (snd (repAssocs r !! read s))
-  --return $ report2JSONReport r

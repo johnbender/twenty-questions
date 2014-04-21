@@ -1,89 +1,109 @@
 -- module Interactive where
 
-import Hoogle
+import Text.Regex
 import Text.Regex.Posix
 import Data.List
-import Data.List.Split
---import System.Eval.Haskell
-import GHCWrapper
-import JSON
 import System.Posix.Directory
 import System.Environment
 import Control.Applicative
+import Control.Monad.Trans
+import Control.Monad
 import GHC (RunResult (..))
+import Language.Haskell.Exts.Parser
+import Language.Haskell.Exts.Syntax hiding (Generator)
+import Language.Haskell.Exts.Pretty
 
-url="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Data-Foldable.html#v:find"
+import Generator
+import JSON
+import GHCWrapper
+import TypeHole
+import Types
+import HoogleWrapper
 
-parseResultURL url = 
-  let [[_,mod,nm]] = url =~ "/html/(.*)\\.html#v:(.*)" :: [[String]]
-  in (splitOn "-" mod,nm)
+{--
+parseOk :: ParseResult a -> Maybe a
+parseOk (ParseOk a) = Just a
+parseOk _ = Nothing
+--}
 
-testResult = parseResultURL url
+tyArity (TyFun _ t) = 1 + tyArity t
+tyArity  _ = 0
 
---hasType ty mod nm = typeOf (nm ++ " :: " ++ ty) [intercalate "." mod]
-hasType ty mod nm = do
-  let modStr = intercalate "." mod
-  e <- runGhc [] [modStr] $ exprType (modStr ++ "." ++ nm ++ " :: " ++ ty) 
-  return $ isRight e
+uncurryTy :: Type -> Type
+uncurryTy = go []
+  where 
+    go args (TyFun a t) = go (a:args) t
+    go args t = TyFun (TyTuple Boxed $ reverse args) t
+
+hasType ty (CandidateInfo mods expr) = typeCheck mods (expr ++ " :: " ++ ty) 
 
 isRight (Right _) = True
 isRight _ = False
 
 isTyped s = length s > 0
 
-{--
-partitionCandidates :: [String] -> [String] -> IO (Either [String] (Maybe JSONReport))
-partitionCandidates mods nms = do
-  let candidate nm = "Candidate \"" ++ nm ++ "\" " ++ nm
-      candidates = intercalate "," $ map candidate nms
-  cwd <- getWorkingDirectory
-  eval_ ("partitionCandidates [" ++ candidates ++ "]") ("TwentyQuestions":"Candidate":mods) [] [] [cwd]
+-- map arity to uncurry function
+uncurriers :: [(Int,String)] 
+uncurriers = [(1, "id"), (2, "uncurry")]
 
+partitionCandidates :: Type -> [CandidateInfo] -> IO ()
+partitionCandidates ty cis = do
+  let mods = concat $ map ciMods cis
+      exprs = map ciExpr cis
 
-partitionCandidates :: [String] -> [String] -> IO (Maybe JSONReport)
-partitionCandidates mods nms = do
-  let candidate nm = "Candidate \"" ++ nm ++ "\" " ++ nm
-      candidates = intercalate "," $ map candidate nms
-  eval ("partitionCandidates [" ++ candidates ++ "]") ("TwentyQuestions":"Candidate":mods)
---}  
+  let arity = tyArity ty
+      uncurriedTy = uncurryTy ty
+      Just uncurrier = lookup arity uncurriers
 
-partitionCandidates :: String -> [String] -> [String] -> IO ()
-partitionCandidates ty mods nms' = do
   let mods' = nub $ sort ("Prelude":mods)
-      nms = nub $ sort nms'
-      candidate nm = "Candidate \"" ++ nm ++ "\" " ++ nm
-      candidates = intercalate "," $ map candidate nms
-      stmt = "partitionCandidates (undefined :: " ++ ty ++ ") [" ++ candidates ++ "]"
-  -- putStrLn stmt
-  -- mapM_ putStrLn nms
+      exprs' = nub $ sort exprs
+      candidate e = "Candidate \"" ++ e ++ "\" (" ++ uncurrier ++ " (" ++ e ++ "))"
+      candidates = intercalate "," $ map candidate exprs'
+      stmt = "partitionCandidates (undefined :: " ++ prettyPrint uncurriedTy ++ ") [" ++ candidates ++ "]"
+ 
+  --putStrLn "Candidates: "
+  --mapM_ (putStrLn . candidate) nms
+  --putStrLn stmt
+
   r <- runGhc ["TwentyQuestions","Candidate"] mods' $ runStmt stmt
   case r of
     Left e -> putStrLn "Error" >> print e
     Right (RunOk nm) -> return () --putStrLn "RunOk"
     Right (RunException e) -> putStrLn "RunException"
-    
   return ()
+  
+typeCheckCandidates :: MonadIO m => Type -> [CandidateInfo] -> m [CandidateInfo]
+typeCheckCandidates t cis = do
+  r <- liftIO $ runGhc [] [] (sequence $ map (hasType $ prettyPrint t) cis)
+  case r of
+    Left e -> fail (show e)
+    Right tys -> return $ map snd $ filter fst $ zip tys cis
+  
+{--
+runGenerator (Generator tys gen) = do
+  liftIO $ do
+    putStrLn $ "generating candidates for types: "
+    mapM_ (putStrLn . prettyPrint) tys
+  results <- mapM (findCandidates . prettyPrint) tys
+  -- liftIO $ mapM_ putStrLn $ map ciExpr results
+  return $ map gen (combinations results)
+--}
 
+combinations [] = [[]]
+combinations (l1:ls) = [e:l | e <- l1, l <- combinations ls]
+
+driver ty = do
+  cis <- runGenerators (TypeHoleInfo ty)
+  cis' <- typeCheckCandidates ty cis
+  liftIO $ partitionCandidates ty cis'
   
 main = do
-  -- db <- loadDatabase "/home/msb/.cabal/share/hoogle-4.2.31/databases/base.hoo"
- 
-  -- putStrLn "Enter hoogle query: "
-  -- qStr <- getLine
-  
-  [dbPath,qStr] <- getArgs
-  db <- loadDatabase dbPath
+  [dbPath] <- getArgs
+  runTQM dbPath $ forever $ do
+    qStr <- liftIO $ do
+      putStrLn "Enter query: "
+      getLine
+    let Just ty = parseOk $ parseType qStr
+    driver ty
+    
 
-  let Right q = parseQuery Haskell qStr
-  let results = filter ((==["Prelude"]) . fst) $ map (parseResultURL . fst . head . locations . snd) $ search db q
-  tys <- mapM (uncurry $ hasType qStr) results
-  let typedResults = map snd $ filter fst $ zip tys results
-  let modules = nub $ sort $ map (intercalate "." . fst) typedResults
-      candidateNames = nub $ sort $ map (\(mods,nm) -> intercalate "." (mods ++ [nm])) typedResults
-  -- mapM_ putStrLn candidateNames
-  partitionCandidates qStr modules candidateNames
-{-
-  case out of
-    (Just jsonReport) -> dumpJSONReport jsonReport
-    Nothing -> putStrLn "Nothing"
--}
