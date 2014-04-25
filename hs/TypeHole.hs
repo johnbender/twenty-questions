@@ -36,6 +36,6 @@ parseTypeHoleInfo mods expr ty = do
   let matches = msg =~ "Found hole ._(.*).  with type: (.*)" :: [[String]]
       parseMatch [_,nm,strTy] = do ty <- parseOk (parse strTy)
                                    return (nm,ty)
-  print msg
-  print matches
+  -- print msg
+  -- print matches
   return $ NamedTypeHoleInfo $ catMaybes $ map parseMatch matches

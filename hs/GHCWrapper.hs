@@ -32,8 +32,8 @@ typeCheck mods e = do
     {--}
     case result of
       Left x -> liftIO $ do 
-                   putStrLn $ "Type Error for: "  ++ e
-                   print x
+                   --putStrLn $ "Type Error for: "  ++ e
+                   --print x
                    return False
       Right _ -> return True
     

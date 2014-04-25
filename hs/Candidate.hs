@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Candidate where
 
+import Control.Concurrent
 import Control.Exception
 import Test.QuickCheck.Arbitrary
 import Test.QuickCheck.Gen
@@ -90,11 +91,18 @@ repPartitionSizeStdDev rep =
 getOutput :: (a -> b) -> a -> IO (Output b)
 getOutput f a = 
   let o = f a
-  in evaluate (o `seq` Right o) `catch` (\ (e :: SomeException) -> return $ Left (Error "error"))
+  in do mv <- newEmptyMVar
+        tid <- forkIO $ do
+          v <- evaluate (o `seq` Right o) `catch` (\ (e :: SomeException) -> return $ Left (Error "error"))
+          putMVar mv v
+        forkIO $ do threadDelay 1000
+                    killThread tid
+                    putMVar mv $ Left (Error "timeout")
+        takeMVar mv
 
 runReport :: Ord b => [Candidate a b] -> a -> IO (Report a b)
 runReport candidates input = do
-  outputs <- mapM (\ (Candidate _ f) -> getOutput f input) candidates
+  outputs <- mapM (\ (Candidate nm f) -> getOutput f input) candidates
   let outputs' = normalizeOutputs outputs
   let results = MM.fromList $ zip outputs' candidates
   return $ Report input results
@@ -111,7 +119,8 @@ bestReport = head . sortReports
 genReports :: (Arbitrary a, Ord b) => Int -> [Candidate a b] -> IO [Report a b]
 genReports nInputs candidates = do
   inputs <- generate $ vectorOf nInputs arbitrary
-  mapM (runReport candidates) (take nInputs inputs)
+  reps <- mapM (runReport candidates) (take nInputs inputs)
+  return reps
 
 -- is input an algebraic data type
 -- special case: don't consider strings or tuples to be ADTs.

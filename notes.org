@@ -7,3 +7,18 @@
 *** inline selections/output
 *** back out by selecting previous
 *** hide selected
+
+* Ideas
+** Detect and hide irrelevant parts of input.
+For example, candidates of the form: (?? . fst) 
+
+Just as we should differentiate candidates by whether or not they fail
+on an input, we should differentiate between candidates based on
+whether they use a part of the input at all.
+
+** Randomly generated inputs can be unsuitable for presentation.
+Want the simplest inputs.  Seems like we'd have better luck with
+concolic.  
+
+Ultimately, we could make use of concolic and solver aided. SA could
+also help eliminate equivalent candidates.

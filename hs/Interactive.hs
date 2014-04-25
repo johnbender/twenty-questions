@@ -67,9 +67,9 @@ partitionCandidates ty cis = do
 
   r <- runGhc ["TwentyQuestions","Candidate"] mods' $ runStmt stmt
   case r of
-    Left e -> putStrLn "Error" >> print e
+    Left e -> putStrLn "Error" >> return () --print e
     Right (RunOk nm) -> return () --putStrLn "RunOk"
-    Right (RunException e) -> putStrLn "RunException"
+    Right (RunException e) -> putStrLn "RunException" >> print e
   return ()
   
 typeCheckCandidates :: MonadIO m => Type -> [CandidateInfo] -> m [CandidateInfo]
@@ -79,16 +79,6 @@ typeCheckCandidates t cis = do
     Left e -> fail (show e)
     Right tys -> return $ map snd $ filter fst $ zip tys cis
   
-{--
-runGenerator (Generator tys gen) = do
-  liftIO $ do
-    putStrLn $ "generating candidates for types: "
-    mapM_ (putStrLn . prettyPrint) tys
-  results <- mapM (findCandidates . prettyPrint) tys
-  -- liftIO $ mapM_ putStrLn $ map ciExpr results
-  return $ map gen (combinations results)
---}
-
 combinations [] = [[]]
 combinations (l1:ls) = [e:l | e <- l1, l <- combinations ls]
 
@@ -106,4 +96,3 @@ main = do
     let Just ty = parseOk $ parseType qStr
     driver ty
     
-

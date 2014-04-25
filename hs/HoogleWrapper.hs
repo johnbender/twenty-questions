@@ -12,7 +12,17 @@ import Text.Regex.Posix
 import Data.List.Split
 import Data.Char
 
+badCandNames = [
+    "Prelude.toEnum"
+  , "Prelude.asTypeOf"
+  , "Control.Monad.forever"
+  , "Prelude.cycle"
+  , "Prelude.id"
+  , "Prelude.fromEnum"
+  , "Prelude.fromIntegral"
+  ]
 
+filterCands = filter (\c -> not $ elem (ciExpr c) badCandNames)
 
 runTQM dbPath act = do
   db <- loadDatabase dbPath
@@ -23,12 +33,15 @@ search q = do
   db <- ask
   return $ Hoogle.search db q
 
+hoogleFlags = "-Unsafe -Data.Bits -Foreign -Data.Trace -GHC -Control.DeepSeq -Data.Generics -Debug.Trace "
+
 findCandidates :: String -> TQM [CandidateInfo]
 findCandidates qStr = do
-  case parseQuery Haskell qStr of
+  let qStr' = hoogleFlags ++ qStr
+  case parseQuery Haskell qStr' of
      Right q -> do results <- map (parseResultURL . fst . head . locations . snd) <$> search q
-                   return $ map (\(mod,nm) -> CandidateInfo [mod] (mod ++ "." ++ nm)) results
-     Left _ -> do liftIO . putStrLn $ "findCandidates: could not parse query " ++ qStr
+                   return $ filterCands $ map (\(mod,nm) -> CandidateInfo [mod] (mod ++ "." ++ nm)) results
+     Left _ -> do liftIO . putStrLn $ "findCandidates: could not parse query " ++ qStr'
                   return []
                         
 
