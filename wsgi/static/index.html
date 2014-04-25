@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+    <div id="editor">main = printStrLn "Hello World"</div>
+    <div class="card-stack">
+    </div>
+
+    <script src="js/vendor/jquery-1.11.0.js"></script>
+    <script src="js/vendor/mustache.js"></script>
+    <script src="js/vendor/ace/ace-1.1.3.js"></script>
+    <script src="js/vendor/ace/mode-haskell.js"></script>
+    <script src="js/vendor/ace/keybinding-emacs.js"></script>
+    <script src="js/vendor/ace/theme-solarized_light.js"></script>
+    <script src="js/cards.js"></script>
+    <script src="js/main.js"></script>
+    <script type="text/template" id="card-template">
+      <div class="card">
+        <div class="left">
+          {{#left}}
+          <ul class="results">
+            {{#results}}
+            <li>{{ . }}</li>
+            {{/results}}
+          </ul>
+
+          <ul class="names">
+            {{#names}}
+            <li>{{ . }}</li>
+            {{/names}}
+          </ul>
+          {{/left}}
+        </div>
+
+        <div class="right">
+          {{#right}}
+          <ul class="results">
+            {{#results}}
+            <li>{{ . }}</li>
+            {{/results}}
+          </ul>
+
+          <ul class="names">
+            {{#names}}
+            <li>{{ . }}</li>
+            {{/names}}
+          </ul>
+          {{/right}}
+        </div>
+
+        <!-- clear both -->
+        <div style="clear: both;"/>
+      </div>
+    </script>
+  </body>
+</html>
