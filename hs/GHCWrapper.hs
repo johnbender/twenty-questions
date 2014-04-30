@@ -23,7 +23,7 @@ showPpr a = GHC.runGhcT (Just libdir) $ do
 typeCheck :: [String] -> String -> GhcT IO Bool
 typeCheck mods e = do
     let imports = nub $ sort $ defaultMods ++ mods
-    result <- (gtry $ do 
+    result <- (gtry $ do
       setContext $ map (GHC.IIDecl . GHC.simpleImportDecl . GHC.mkModuleName) imports
       exprType e
       ) :: GhcT IO (Either SomeException Type)
@@ -31,19 +31,16 @@ typeCheck mods e = do
 
     {--}
     case result of
-      Left x -> liftIO $ do 
-                   --putStrLn $ "Type Error for: "  ++ e
-                   --print x
-                   return False
+      Left x -> return False
       Right _ -> return True
-    
+
   where isRight (Right _) = True
         isRight _ = False
 
 runGhc :: [String] -> [String] -> GhcT IO a -> IO (Either SomeException a)
-runGhc targets mods a = 
+runGhc targets mods a =
   let imports = nub $ sort $ defaultMods ++ targets ++ mods in
-  defaultErrorHandler defaultFatalMessager defaultFlushOut 
+  defaultErrorHandler defaultFatalMessager defaultFlushOut
     $ try
     $ do
     GHC.runGhcT (Just libdir) $ do
@@ -55,4 +52,3 @@ runGhc targets mods a =
       a
 
 --return $ showSDoc dflags (ppr v)
- 
