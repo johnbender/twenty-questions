@@ -18,14 +18,14 @@ repBox rep =
 
 mkOutputBox input num (output, candidates) =
   let numBox = text $ show num
-      o = text $ case output of 
+      o = text $ case output of
                     Left OK -> "OK"
                     Left _ -> "Error"
                     Right v -> show v
       io = input <> text " -> " <> o
       cnames = map (text . candidateName) candidates
   in vcat left (numBox:io:cnames)
-      
+
 
 partitionCandidates :: (Arbitrary a, Show a, Data a, Show b, Data b, Ord b) => (a -> b) -> [Candidate a b] -> IO ()
 partitionCandidates _ [] = putStrLn "No candidates."
@@ -34,9 +34,10 @@ partitionCandidates f cs = do
   rs <- genReports 1000 cs
   let rs' = sortReports rs
   let r = bestReport rs
+  final <- shrinkReport r cs
 
-  -- show report
-  printBox $ repBox r
+-- show report
+  printBox $ repBox final
 
   -- prompt for input
   putStrLn ""

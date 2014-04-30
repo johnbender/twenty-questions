@@ -34,8 +34,8 @@ type Output b = Either OKError b
 
 data Report a b = Report { repInput :: a, repResults :: MM.MultiMap (Output b) (Candidate a b) }
 
-data Score = Score { scoreNumOutputs :: Int, 
-                     scoreInputSize :: Int, 
+data Score = Score { scoreNumOutputs :: Int,
+                     scoreInputSize :: Int,
                      scoreAvgOutputSize :: Double,
                      scorePartitionSizeStdDev :: Double
                    }
@@ -51,14 +51,14 @@ toOKError (Left e) = Left e
 toOKError (Right _) = Left OK
 
 {-
-normalizeOutputs r = 
-  if any isLeft $ repOutputs r 
+normalizeOutputs r =
+  if any isLeft $ repOutputs r
   then let results = MM.mapKeys toOKError $ repResults r
        in r { repResults = results }
   else r
 -}
 
-normalizeOutputs outs = 
+normalizeOutputs outs =
   if any isLeft outs
   then map toOKError outs
   else outs
@@ -69,7 +69,7 @@ repScore r@(Report input results) = Score numOutputs (gsize input) (fromIntegral
   where numOutputs = repNumOutputs r
         outSize (Left _) = 0
         outSize (Right o) = gsize o
-        
+
 isLeft (Left _) = True
 isLeft _ = False
 
@@ -83,13 +83,13 @@ repNumOutputs rep =
 
 
 repPartitionSizeStdDev :: Report a b -> Double
-repPartitionSizeStdDev rep = 
+repPartitionSizeStdDev rep =
   let l = repAssocs rep
       numCandidates = length . snd
   in (stddev $ map (fromIntegral . numCandidates) l) * fromIntegral (length l)
 
 getOutput :: (a -> b) -> a -> IO (Output b)
-getOutput f a = 
+getOutput f a =
   let o = f a
   in do mv <- newEmptyMVar
         tid <- forkIO $ do
@@ -122,6 +122,44 @@ genReports nInputs candidates = do
   reps <- mapM (runReport candidates) (take nInputs inputs)
   return reps
 
+-- TODO this only takes the first in a list of "shrunken" inputs
+shrinkReport :: (Arbitrary a, Eq b) => Report a b -> [Candidate a b] -> IO (Report a b)
+shrinkReport rep candidates = do
+  let input = repInput rep
+      results = repResults rep
+      shrunk = shrink input
+      firstShrunk = head shrunk
+
+      -- the candidates run with a shrunken input
+      new = seqOutput firstShrunk candidates
+
+      -- the candidates run with the old input
+      old = seqOutput input candidates in
+
+   -- no further shrinking candidates
+   if null shrunk
+   then return rep
+   else do
+     newOutputs <- new
+     oldOutputs <- old
+     -- if the two sets of outputs are the same in spite of
+     -- shrinking the input continue to see if we can make it smaller
+     -- otherwise return the current report
+     (if newOutputs == oldOutputs
+      then shrinkReport (Report firstShrunk results) candidates
+      else return rep)
+
+seqOutput :: a -> [Candidate a b] -> IO [Output b]
+seqOutput input cs = sequence $ (map (\cnd -> getOutput (candidate cnd) input) cs)
+
+-- Get Minimal Input:
+-- while shrink a !== a do
+--   before_shrink <- a
+--   shrunk <- (shrink a)
+--   output <- (candidate a)
+--   if output !== b
+--     return before_shrunk
+
 -- is input an algebraic data type
 -- special case: don't consider strings or tuples to be ADTs.
 isADT :: (Data a, Typeable a) => a -> Bool
@@ -132,5 +170,3 @@ isADT a | typeOf a == typeOf "" = False
 
 groupByConstr :: Data a => [a] -> [[a]]
 groupByConstr = groupBy ((==) `on` toConstr)
-
-  
