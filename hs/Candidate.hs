@@ -131,25 +131,25 @@ shrinkReport :: (Show a, Arbitrary a, Data a, Data b, Eq b, Eq a, Ord b)
                 -> [Candidate a b]
                 -> IO (Report a b)
 
-shrinkReport rep candidates = do
+shrinkReport rep candidates =
   let input = repInput rep
       results = repResults rep
-      shrunkenInputs = shrink input in
-    do
-      -- putStrLn $ "current best input: " ++ show input
-      -- putStrLn $ "candidate inputs:   " ++ show shrunkenInputs
+      shrunkenInputs = shrink input
+  in do
+    -- putStrLn $ "current best input: " ++ show input
+    -- putStrLn $ "candidate inputs:   " ++ show shrunkenInputs
 
-      -- generate new reports for all of the shrunken inputs
-      newReps <- genReportsFor shrunkenInputs candidates
+    -- generate new reports for all of the shrunken inputs
+    newReps <- genReportsFor shrunkenInputs candidates
 
-      -- sort look for the best of the new reports including the old one
-      let newBest = head $ sortReports (rep : newReps) in
+    -- sort look for the best of the new reports including the old one
+    let newBest = head $ sortReports (rep : newReps) in
 
-        -- if the new best report input is the same as the old return the old
-        -- otherwise attempt to shrink the input further
-        if (repInput newBest) == (repInput rep)
-        then return rep
-        else shrinkReport newBest candidates
+      -- if the new best report input is the same as the old return the old
+      -- otherwise attempt to shrink the input further
+      if (repInput newBest) == (repInput rep)
+      then return rep
+      else shrinkReport newBest candidates
 
 seqOutput :: a -> [Candidate a b] -> IO [Output b]
 seqOutput input cs = sequence $ (map (\cnd -> getOutput (candidate cnd) input) cs)
