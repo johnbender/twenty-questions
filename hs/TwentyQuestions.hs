@@ -27,7 +27,7 @@ mkOutputBox input num (output, candidates) =
   in vcat left (numBox:io:cnames)
 
 
-partitionCandidates :: (Arbitrary a, Show a, Data a, Show b, Data b, Ord b) => (a -> b) -> [Candidate a b] -> IO ()
+partitionCandidates :: (Arbitrary a, Show a, Data a, Show b, Data b, Ord b, Eq a) => (a -> b) -> [Candidate a b] -> IO ()
 partitionCandidates _ [] = putStrLn "No candidates."
 partitionCandidates _ [c] = putStrLn $ "Done: " ++ candidateName c
 partitionCandidates f cs = do

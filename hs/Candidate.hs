@@ -120,11 +120,17 @@ bestReport = head . sortReports
 genReports :: (Arbitrary a, Ord b) => Int -> [Candidate a b] -> IO [Report a b]
 genReports nInputs candidates = do
   inputs <- generate $ vectorOf nInputs arbitrary
-  reps <- mapM (runReport candidates) (take nInputs inputs)
+  reps <- genReportsFor (take nInputs inputs) candidates
   return reps
 
--- TODO this only takes the first in a list of "shrunken" inputs
-shrinkReport :: (Show a, Arbitrary a, Data a, Data b, Eq b, Ord b) => Report a b -> [Candidate a b] -> IO (Report a b)
+-- generate reports for many inputs
+genReportsFor inputs candidates = mapM (runReport candidates) inputs
+
+shrinkReport :: (Show a, Arbitrary a, Data a, Data b, Eq b, Eq a, Ord b)
+                => Report a b
+                -> [Candidate a b]
+                -> IO (Report a b)
+
 shrinkReport rep candidates = do
   let input = repInput rep
       results = repResults rep
@@ -134,34 +140,23 @@ shrinkReport rep candidates = do
    if null shrunkenInputs
    then return rep
    else
-     -- TODO what we really want is to run each shrunken input
-     --      then append the old input to the list after they are all run
-     --      and then sortReports
      do
-       print ""
-       print input
-       print shrunkenInputs
-       print ""
-       validInputs <- filterM (\shrunk ->
-                              -- the candidates run with a shrunken input
-                              let new = seqOutput shrunk candidates
-                                  -- the candidates run with the old input
-                                  old = seqOutput input candidates in
-                              do
-                                newOutputs <- new
-                                oldOutputs <- old
-     -- if the two sets of outputs are the same in spite of
-     -- shrinking the input continue to see if we can make it smaller
-     -- otherwise return the current report
-                                return (newOutputs == oldOutputs)) shrunkenInputs
---      then shrinkReport (Report shrunk results) candidates
---      else return rep))
-       if null validInputs
-         then return rep
-         else
-           do
-             best <-forM validInputs (\input -> shrinkReport (Report input results) candidates)
-             return (head $ sortReports best)
+       -- print $ "===================="
+       -- print $ "current best input: " ++ show input
+       -- print $ "candidate inputs:   " ++ show shrunkenInputs
+       -- print $ "===================="
+
+       -- generate new reports for all of the shrunken inputs
+       newReps <- genReportsFor shrunkenInputs candidates
+
+       -- sort look for the best of the new reports including the old one
+       let newBest = head $ sortReports (rep : newReps) in
+
+         -- if the new best report input is the same as the old return the old
+         -- otherwise attempt to shrink the input further
+         if (repInput newBest) == (repInput rep)
+         then return $ rep
+         else shrinkReport newBest candidates
 
 seqOutput :: a -> [Candidate a b] -> IO [Output b]
 seqOutput input cs = sequence $ (map (\cnd -> getOutput (candidate cnd) input) cs)
