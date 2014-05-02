@@ -141,10 +141,9 @@ shrinkReport rep candidates = do
    then return rep
    else
      do
-       -- print $ "===================="
-       -- print $ "current best input: " ++ show input
-       -- print $ "candidate inputs:   " ++ show shrunkenInputs
-       -- print $ "===================="
+
+       -- putStrLn $ "current best input: " ++ show input
+       -- putStrLn $ "candidate inputs:   " ++ show shrunkenInputs
 
        -- generate new reports for all of the shrunken inputs
        newReps <- genReportsFor shrunkenInputs candidates
