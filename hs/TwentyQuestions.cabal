@@ -6,4 +6,4 @@ Build-Type:      Simple
 Executable Interactive
   Main-Is: Interactive.hs
 
-  Build-Depends:  base, unix, hoogle, split, aeson, QuickCheck, syb, ghc, containers, bytestring, multimap, ghc-paths, regex-posix, hstats, haskell-src-exts, regex-compat, mtl
+  Build-Depends:  base, unix, hoogle == 4.2.32, split, aeson, QuickCheck, syb, ghc, containers, bytestring, multimap, ghc-paths, regex-posix, hstats, haskell-src-exts, regex-compat, mtl, boxes

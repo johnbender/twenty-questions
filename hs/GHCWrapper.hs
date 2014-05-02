@@ -12,6 +12,8 @@ import Data.List (nub, sort)
 import Control.Applicative
 import Control.Monad.Trans
 
+import System.Environment
+
 runStmt s = GHC.runStmt s RunToCompletion
 
 defaultMods = ["Prelude"]
@@ -43,9 +45,15 @@ runGhc targets mods a =
   defaultErrorHandler defaultFatalMessager defaultFlushOut
     $ try
     $ do
+    pkgDb <- getEnv "CABAL_PKG_DB"
     GHC.runGhcT (Just libdir) $ do
       dflags <- getSessionDynFlags
-      setSessionDynFlags $ dflags {hscTarget = HscInterpreted, ghcLink = LinkInMemory , ghcMode = CompManager }
+      setSessionDynFlags $ dflags {
+        hscTarget = HscInterpreted,
+        ghcLink = LinkInMemory,
+        ghcMode = CompManager,
+        extraPkgConfs = (\fs -> (PkgConfFile pkgDb) : fs )
+      }
       setTargets =<< sequence (map (\t -> guessTarget t Nothing) targets)
       load LoadAllTargets
       setContext $ map (GHC.IIDecl . GHC.simpleImportDecl . GHC.mkModuleName) imports
