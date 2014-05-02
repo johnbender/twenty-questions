@@ -148,7 +148,7 @@ shrinkReport rep candidates = do
         -- if the new best report input is the same as the old return the old
         -- otherwise attempt to shrink the input further
         if (repInput newBest) == (repInput rep)
-        then return $ rep
+        then return rep
         else shrinkReport newBest candidates
 
 seqOutput :: a -> [Candidate a b] -> IO [Output b]
