@@ -46,4 +46,4 @@ partitionCandidates f cs = do
   s <- getLine
   putStrLn ""
 
-  partitionCandidates f (snd (repAssocs r !! read s))
+  partitionCandidates f (snd (repAssocs final !! read s))
