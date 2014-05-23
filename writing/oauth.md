@@ -10,6 +10,14 @@
  - hypothetical command line set of methods
  - requires token types or object wrappers
 
+- example
+ - user has code from oauth two
+ - doesn't know that it's different from oauth one request token
+ - question: how do i get an access token?
+ - library provides both oauth one and two methods
+ - differentiation might be impossible
+ - trace can differentiate based on methods called
+
 - CodeHint approach
  - stop at breakpoint set by programmer
  - suggests chain of method calls
@@ -18,15 +26,16 @@
 
 - TwentyQuestions approach
  - dynamic AND static
- - start with debugger breakpt / contextless REPL
+ - REPL / debugger/ both
  - suggest paths through method calls
  - differentiate candidates based on interesting inputs (traces)
- - REPL / debugger/ both
 
 - CodeHint downsides
  - requires types
  - debugging context required
- - filtering candidates impossible
+ - filtering difficult
+  - knowledge of desired result required
+  - subsequent execution in context required
 
 - TwentyQuestions downsides
  - traces may be hard to get
