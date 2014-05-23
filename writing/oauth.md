@@ -6,7 +6,7 @@
 
 - example
  - python
- - oauth flow using oauth2
+ - oauth flow using oauth two
  - hypothetical command line set of methods
  - requires token types or object wrappers
 
@@ -15,8 +15,8 @@
  - doesn't know that it's different from oauth one request token
  - question: how do i get an access token?
  - library provides both oauth one and two methods
- - differentiation might be impossible
- - trace can differentiate based on methods called
+ - differentiation might be impossible with just types / outputs
+ - trace can differentiate based on methods called / dependencies
 
 - CodeHint approach
  - stop at breakpoint set by programmer
