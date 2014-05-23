@@ -10,21 +10,21 @@ Alex-style specification (i.e. unit test or contract).
 ```javascript
 test(m) {
   m.put("key","value");
-  assert(m.contains("key","value"));
+  assert(m.has_entry("key","value"));
 }
 ```
 
-We can borrow from Alex's idea, allowing the put and contains methods
+We can borrow from Alex's idea, allowing the put and has_entry methods
 to be renamed to match the candidate.  More concretely, a candidate
-consists of an object and methods put and contains on that object.
+consists of an object and methods put and has_entry on that object.
 
 We could generalize methods to arbitrary expressions, by rewriting the
 test case as:
 
 ```javascript
-test(m,put,contains) {
+test(m,put,has_entry) {
   m1 = put(m,"key","value");
-  assert(contains(m2,"key","value"));
+  assert(has_entry(m2,"key","value"));
 }
 ```
 
@@ -89,15 +89,15 @@ We'll focus first on presenting the differences.  If we limit
 ourselves to test cases, we could do something like:
 
 ```javascript
-test(m,put,contains) {
+test(m,put,has_entry) {
   put(m,"key","value");
-  assert(contains(m,"key","value"));
-  assert(HTML5_LOCAL_STORAGE_MAP_CONTAINS(m,"key","value"));
+  assert(has_entry(m,"key","value"));
+  assert(HTML5_LOCAL_STORAGE_MAP_HAS_ENTRY(m,"key","value"));
 }
 ```
 
-Here HTML5_LOCAL_STORAGE_MAP_CONTAINS(m,"key","value") returns true if
-m is stored in HTML5 local storage, and m contains the mapping of
+Here HTML5_LOCAL_STORAGE_MAP_HAS_ENTRY(m,"key","value") returns true if
+m is stored in HTML5 local storage, and m has_entry the mapping of
 "key" to "value".  How could this function be implemented?  How can we
 expect the user to understand what it does?
 
@@ -105,12 +105,12 @@ A better approach is to allow a predicate on the effect of running an
 expression.
 
 ```javascript
-test(m,put,contains) {
+test(m,put,has_entry) {
   put(m,"key","value") @e;
-  assert(HTML5LocalStorage.Write in e);
-  assert(contains(m,"key","value")) @e;
-  assert(HTML5LocalStorage.Read in e);
-  assert(HTML5_LOCAL_STORAGE_MAP_CONTAINS(m,"key","value"));
+  assert(e.contains(HTML5LocalStorage.Write));
+  assert(has_entry(m,"key","value")) @e;
+  assert(e.contains(HTML5LocalStorage.Read));
+  assert(HTML5_LOCAL_STORAGE_MAP_HAS_ENTRY(m,"key","value"));
 }
 ```
 
