@@ -32,6 +32,9 @@ In the CodeHint demo above the approach is centered around types and so the mapp
 access_token = request_access_token((get_pin(auth_url(request_token)))
 ```
 
+There are several possible issues with this approach.
+
+First, a debugging context is assumed/required. That is the tool requires a large amount of very specific context when building its satisfying candidate expressions. You might also look at this context as a single very specific input to the expression to the exclusion of all others and a limit on the ability of the developer to explore other possibilities given a different context. More concretely, if you watch the first demo closely the `jtree` parameter is used in the generated expressions to produce the desired `window` object. Being constrained by the context means that if the developer knows of some other readily accessible object not in scope that might also be of interest the tool can't help.
 
 - example
  - python
