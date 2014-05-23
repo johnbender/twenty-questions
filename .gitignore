@@ -33,3 +33,6 @@ coverage.xml
 docs/_build/
 
 *cabal*
+
+# writing 
+writing/preview.html
