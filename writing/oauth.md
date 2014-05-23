@@ -24,6 +24,14 @@ From the library [README](https://github.com/simplegeo/python-oauth2#twitter-thr
 
 The ideal output of a tool meant to stand in for documentation in this example, is set of methods that handle each of these steps. Here we will assume that those methods exist in the OAuth library though in reality the prompting of the user is not.
 
+<iframe width="420" height="315" src="https://www.youtube.com/embed/qn5yIEe9kks#t=231" frameborder="0" allowfullscreen></iframe>
+
+In the CodeHint demo above the approach is centered around types and so the mapping to our example might be that the user has some instance of `RequestToken` and desires to have an instance of `AccessToken`. At a debugger breakpoint CodeHint will search for methods [1] that can be composed with data that is in scope at the breakpoint to satisfy an assignment to a variable of given type. Under the assumption that a set of appropriate methods exist for this purpose, it's not hard to image that it would be able to find them and compose them to match the output type the user needs.
+
+```python
+access_token = request_access_token((get_pin(auth_url(request_token)))
+```
+
 
 - example
  - python
@@ -60,3 +68,8 @@ The ideal output of a tool meant to stand in for documentation in this example, 
 
 - TwentyQuestions downsides
  - traces may be hard to get
+
+
+## Footnotes
+
+1. It's not clear exactly what the scope is we assume it's the classpath.
