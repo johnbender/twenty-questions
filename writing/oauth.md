@@ -1,5 +1,13 @@
 # OAuth, Python, and CodeHint
 
+It's frequently the case that developers are assigned a task for which there is an existing library that handles most of the details involved ("glue programming"). In these cases the library is a useful abstraction that centralizes the responsibility for correctness and requires only that the developer "learn the library" and not necessarily the details of the task itself. Learning the library though is not always a trivial task.
+
+For example, the various OAuth flows that allow a user to grant authorization to a third party to view and modify their data in some application that supports OAuth. From personal experience the steps are at least mildly confusing and the infrequency of OAuth implementation means that most developers happily forget the details of their favorite library before having to learn them all over again the next time around.
+
+![oauth yahoo](https://developer.yahoo.com/oauth/guide/images/oauth_graph.gif)
+
+The central difficulty is understanding the set of functions and data that are required to get from a request token (OAuth v1.0) to an access token (both OAuth v1.0 and v2.0). Naturally developers rely on the documentation of the library and possibly of OAuth itself to aid in their implementation.
+
 - use case
  - library doc replacement
  - "I have a request token how do I get an access token?"
