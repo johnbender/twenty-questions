@@ -55,16 +55,38 @@ Welcome to Twenty Questions!
 tq > import OAuth
 tq > rt = RequestToken( ... )
 tq > find rt -> AccessToken
-...
-...
 candidates:
 [1] request_access_token(get_pin(auth_url(rt)))
 [2] request_access_token(get_pin(rt.identifier))
+tq >
 ```
 
-There are few things to note here. The `find` primitive begins the search for a new candidate in the current context and takes as an argument some specification. In this case the specification happens to be a type since that accurately captures the goals of the user. Also, in the specification an object in scope is used for it's type and then is also considered as a candidate argument for the method compositions that fit the specification.
+There are few things to note here. The `find` primitive begins the search for a new candidate in the current context and takes as an argument some specification. In this case the specification happens to be a type since that accurately captures the goals of the user. Also, in the specification an object in scope is used for its type and then is also considered as a candidate argument for the method compositions that fit the specification.
 
-Most importantly it's not at all clear which set of method composition is more desirable, and using the CodeHint method there isn't really a way to differentiate the two. The outputs should be basically the same.
+Most importantly it's not at all clear which set of method compositions is more desirable even though they represent two totally different authorization flows (OAuth1 and OAuth2). Using the CodeHint approach, there isn't really a way to differentiate the two. The outputs should be basically the same.
+
+Here, the trace information that Twenty Questions uses to produce interesting inputs can also be used to inform the user:
+
+```
+candidates:
+[1] request_access_token(get_pin(auth_url(rt)))
+[2] request_access_token(get_pin(rt.identifier))
+tq > trace 1
+...
+http.get
+uri.params
+oauth1.request_token
+oauth1.pin
+...
+
+tq > trace 2 | grep "oauth"
+...
+oauth2.pin
+...
+```
+
+The trace information provides a clue
+
 
 
 - TwentyQuestions approach
@@ -75,13 +97,6 @@ Most importantly it's not at all clear which set of method composition is more d
 - TwentyQuestions downsides
  - traces may be hard to get
 
-- another (?) example
- - user has code from oauth two
- - doesn't know that it's different from oauth one request token
- - question: how do i get an access token?
- - library provides both oauth one and two methods
- - differentiation might be impossible with just types / outputs
- - trace can differentiate based on methods called / dependencies
 
 ## Footnotes
 
