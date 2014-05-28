@@ -24,7 +24,7 @@ From the library [README](https://github.com/simplegeo/python-oauth2#twitter-thr
 2. Wait for the user to provide the verifier PIN from the authorization confirmation page.
 3. Request an access token from the service using the PIN and the request token.
 
-The ideal output of a tool meant to stand in for documentation in this example, is set of methods that handle each of these steps. Here we will assume that those methods exist in the OAuth library though in reality the prompting of the user is not.
+The ideal output of a tool meant to stand in for documentation in this example, is set of methods that handle each of these steps. Here we will assume that those methods exist in the OAuth library though in reality the prompting of the user is not included.
 
 ## CodeHint
 
@@ -35,14 +35,37 @@ In the CodeHint demo above, the approach is centered around types and so the map
 ```python
 access_token = request_access_token(get_pin(auth_url(request_token))
 ```
-
-There are several possible issues with this approach.
+There are several possible issues with this approach:
 
 First, a debugging context is assumed/required. That is the tool requires a large amount of very specific context when building its satisfying candidate expressions. You might also look at this context as a single very specific input to the expression to the exclusion of all others and a limit on the ability of the developer to explore other possibilities. More concretely, if you watch the first demo closely the `jtree` parameter is used in the generated expressions to produce the desired `window` object. Being constrained by the context means that if the developer knows of some other readily accessible object not in scope that might also be of interest the tool can't help.
 
 Second, filtering a large list of candidates requires continued execution (which is not always an option) or some important foreknowledge of the desired output (e.g. "Eve" in the final demo of the video). To continue with the final example of the demo, if the user has some vague notion that they want data a the leaf of a tree but they don't have perfect knowledge of the shape or content of that data, then filtering in the manner prescribed will be difficult.
 
+Finally, the flows for the first and second versions of OAuth are not the same, as the second version can jump strait to forwarding the user to the authorization url without having to gather a request token. Given two nearly identical inputs and outputs (tokens) it's not clear how the developer would decide or even differentiate between the two candidate expressions using the CodeHint approach.
+
 ## Twenty Questions
+
+In contrast, Twenty Questions aims to not only generate relevant candidates but also to make differentiation easier by using more information and by working *with* the user to find the ideal solution.
+
+Clearly the REPL described in the overview can be leveraged at a breakpoint so that the same context is available but it's not required. Suppose that, instead, the user decides to simply hop into a TQ REPL to try out the different methods for getting from one token type to another.
+
+```
+$ tq
+Welcome to Twenty Questions!
+tq > import OAuth
+tq > rt = RequestToken( ... )
+tq > find rt -> AccessToken
+...
+...
+candidates:
+[1] request_access_token(get_pin(auth_url(rt)))
+[2] request_access_token(get_pin(rt.identifier))
+```
+
+There are few things to note here. The `find` primitive begins the search for a new candidate in the current context and takes as an argument some specification. In this case the specification happens to be a type since that accurately captures the goals of the user. Also, in the specification an object in scope is used for it's type and then is also considered as a candidate argument for the method compositions that fit the specification.
+
+Most importantly it's not at all clear which set of method composition is more desirable, and using the CodeHint method there isn't really a way to differentiate the two. The outputs should be basically the same.
+
 
 - TwentyQuestions approach
  - REPL / debugger/ both
@@ -62,4 +85,4 @@ Second, filtering a large list of candidates requires continued execution (which
 
 ## Footnotes
 
-1. It's not clear exactly what the scope is we assume it's the classpath.
+1. It's not clear exactly what the scope is, we assume it's the classpath.
