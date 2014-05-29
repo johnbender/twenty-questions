@@ -53,50 +53,41 @@ Clearly the REPL described in the overview can be leveraged at a breakpoint so t
 $ tq
 Welcome to Twenty Questions!
 tq > import OAuth
-tq > rt = RequestToken( ... )
+tq > rt = RequestToken()
 tq > find rt -> AccessToken
 candidates:
 [1] request_access_token(get_pin(auth_url(rt)))
-[2] request_access_token(get_pin(rt.identifier))
+[2] request_access_token(get_pin(auth_url(rt.token)))
 tq >
 ```
 
-There are few things to note here. The `find` primitive begins the search for a new candidate in the current context and takes as an argument some specification. In this case the specification happens to be a type since that accurately captures the goals of the user. Also, in the specification an object in scope is used for its type and then is also considered as a candidate argument for the method compositions that fit the specification.
+There are few things to note here. The `find` primitive begins the search for a new candidate in the current context and takes as an argument some specification. In this case the specification happens to be a type since that accurately captures the goals of the user. Also, in the specification an object in scope is used for its type and then is also considered as a candidate argument for the procedure compositions that fit the specification.
 
-Most importantly it's not at all clear which set of method compositions is more desirable even though they represent two totally different authorization flows (OAuth1 and OAuth2). Using the CodeHint approach, there isn't really a way to differentiate the two. The outputs should be basically the same.
+In the first version of OAuth the request token must be constructed with a request to the authorization server but in the second version the request token can be issued once by the authorization server (here denoted by accessing the `token` property of `RequestToken` object). Otherwise the flows are the same and to an uninformed user it's clearly difficult to differentiate between the 2 options. The CodeHint approach to differentiation won't work here since the outputs are basically identical.
 
 Here, the trace information that Twenty Questions uses to produce interesting inputs can also be used to inform the user:
 
 ```
 candidates:
 [1] request_access_token(get_pin(auth_url(rt)))
-[2] request_access_token(get_pin(rt.identifier))
+[2] request_access_token(get_pin(auth_url(rt.token)))
 tq > trace 1
+
 ...
+Uri()
 http.get
-uri.params
 oauth1.request_token
 oauth1.pin
 ...
 
-tq > trace 2 | grep "oauth"
+tq > trace 2
+
 ...
 oauth2.pin
 ...
 ```
 
-The trace information provides a clue
-
-
-
-- TwentyQuestions approach
- - REPL / debugger/ both
- - suggest paths through method calls
- - differentiate candidates based on interesting inputs (traces)
-
-- TwentyQuestions downsides
- - traces may be hard to get
-
+Here the user views the trace of the method being invoked by the first procedure composition and then, after seeing that the procedures belong to the `oauth1` namespace, looks for the same in the second composition. The same trace used to provide interesting inputs for other functions has value as a differentiating feature itself.
 
 ## Footnotes
 
