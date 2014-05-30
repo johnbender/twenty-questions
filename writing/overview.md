@@ -4,8 +4,29 @@ Twenty Questions is designed to be an interactive program construction and explo
 
 ## Approach
 
-Here we provide a short overview of the various functions and capabilities for reference while reading through the example use cases.
+Here we provide a short overview of the various functions and capabilities for reference while reading through the example use cases. First lets take a look at how a user with a specification in mind might begin the search for satisfying expressions.
 
+```
+$ tq
+Welcome to Twenty Questions!
+tq > find [Int] -> Int
+[1] sum
+[2] product
+...
+[10] head
+tq >`
+``
+
+The `find` command adds a constraint to the current specification and then rebuilds the, currently empty, list of satisfying expressions. The specification need not be limited to types but can constrain over each of the dimensions measured by Twenty Questions: inputs, outputs, traces, and types. This particular specification provides a fairly large set of candidates so the next thing to do is likely to differentiate those candidates.
+
+```
+...
+[1] sum
+[2] product
+...
+[10] head
+tq >
+```
 
 
 - start with spec
