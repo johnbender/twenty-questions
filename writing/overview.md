@@ -25,40 +25,50 @@ The `find` command adds a constraint to the current specification and then rebui
 [2] product
 ...
 [10] head
-tq >
+tq > input []
+[1] sum     : 0
+[2] product : 1
+...
+[10] head   : error
 ```
 
+With the user specified input of an empty list Twenty Questions provides the outputs for each of the candidate expressions. The `group` option can be added to organize the results and also weed out candidates by generating constraints to be added to the current set. Additionally, if the user is unsure of which will provide interesting outputs for the candidate functions they can also use the `auto` command and Twenty Questions will select randomized but relevant inputs based on information about the candidate expressions. Consider a simple parser:
 
-- start with spec
- - possibly empty
- - types
- - inputs
- - debugging context
- - other context
+```
+tq > find String -> AST
+[1] foo
+[2] bar
+...
+[10] baz
+tq > auto group
+input : "foo"
+[1] foo : Just FooExpr        [2] bar : Nothing
+...                           ...
+                              [10] baz : Nothing
+```
 
-- generate candidates
- - fit spec
- - heuristic approach
- - composition
- - leverage context
+In many cases random inputs and the corresponding outputs are not sufficient to differentiate between candidates. A random string as input to any one of these parsers would almost always result in a `Nothing` result. Here, Twenty Questions uses trace information from the candidate functions to see that there are an exponentially small number of interesting inputs and chooses one that partitions the results.
 
-- differentiate candidates
- - traces
- - random inputs
- - nominal
+## Additional Features
 
-- interact with user to further refine candidates
- - add/remove candidates methods
- - alter specs
-  - add/remove input
-  - add/remove constraints
-  - add/remove properties
- - view traces for candidates
- - grep through any of the above
+* The built in REPL allows for manual expression construction, evaluation, and addition to a working set of candidate expressions [1].
+
+* The specification set can be altered by addition of specifications through types, constraints on outputs, constraints on trace information, and property tests.
+
+
+* The traces associated with each candidate can be viewed in isolation and also searched using regular expressions.
+
+* Being a REPL Twenty Questions can also be used at any debugging breakpoint to leverage the debugging context for specifications and inputs.
+
+* Candidate generation includes compound expressions with a few simply combinators depending on the language context.
 
 ## Examples
 
-- int functions
-- python, oath, codehint
-- parser
-- Hasam's clock
+The following examples are included to give a more comprehensive overview of how and when Twenty Questions might be used by a developer:
+
+- [python, oath, codehint](./oauth.md)
+- [parser](./parser.md)
+<
+## Footnotes
+
+1. In fact it's reasonable to consider Twenty Questions as an augmented REPL and this makes intuitive sense given that the goal is exploration.
