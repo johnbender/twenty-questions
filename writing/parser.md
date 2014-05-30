@@ -22,7 +22,9 @@ parse      :: String -> AST
 ([1-9][0-9]*)   == Num \1
 ```
 
-This defines how to parse numbers, using a regular expression.
+This defines how to parse numbers, using a regular expression.  For
+remaining expressions, we add constraining examples in terms of
+numbers:
 
 ```haskell
 "1 + 2"         == Add (Num 1) (Num 2)
@@ -31,32 +33,18 @@ This defines how to parse numbers, using a regular expression.
 "1 / 2"         == Div (Num 1) (Num 2)
 ```
 
-For remaining expressions, we define constraints by example. Using
-examples allows us to "anchor" the example.  We've already defined how
-to parse numbers, so we use them to define addition, subtraction,
-multiplication and division.  The system can automatically generalize
-these constraints (which are easy for the programmer to write), to
-something easier for the system to work with:
+This specification is ambiguous.  Key issues are precedence, and
+associativity. Furthermore, the desired parser is most naturally
+expressed using left recursion, which can complicate implementation.
+There are standard techniques for dealing with each of these issues.
+However, with the help of twenty questions, we can abstract away these
+techniques.  The system asks questions about the desired behavior, and
+implements it using the standard techniques. For example, to establish
+the associativity of addition, we can ask the use to choose between
+two examples.
 
 ```haskell
-a "+" b         == Add (parse a) (parse b)
-a "-" b         == Sub (parse a) (parse b)
-a "*" b         == Mul (parse a) (parse b)
-a "/" b         == Div (parse a) (parse b)
-```
-
-The specification is ambiguous (i.e. many parsers could satisfy it).
-Key issues are precedence, and associativity. Furthermore, the desired
-parser is most naturally expressed using left recursion, which can
-complicate implementation.  There are standard techniques for dealing
-with each of these issues.  However, with the help of twenty
-questions, we can abstract away these techniques.  The system asks
-questions about the desired behavior, and implements it using the
-standard techniques. For example, to establish the associativity of
-addition, we can ask the use to choose between two examples.
-
-```haskell
-"1 + 2 + 3" == Add (Add (Nu 1) (Num 2)) (Num 3)
+"1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)
 "1 + 2 + 3" == Add (Num 1) (Add (Num 2) (Num 3))
 
       Add
@@ -149,7 +137,7 @@ Now we have have two conflicting constraints:
 
 ```haskell
 "1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
-"1 ([+-]) 2 ([*/]) 3" == <1> (Num 1) (<2> (Num 2) (Num 3))
+"1 ([+-]) 2 ([*/]) 3"     == <1> (Num 1) (<2> (Num 2) (Num 3))
 ```
 
 The intent is for the second to override the first.  One way to
