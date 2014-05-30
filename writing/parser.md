@@ -93,10 +93,10 @@ could do this via a regex and wildcards:
 ```
 
 This constraint says that inputs matching the regular expression
-should match the pattern on the right hand side.  Here the symbols <1>
-and <2> represent variables in the constraint language, whose values
-are to be determined by the corresponding group in the regex.  This
-single constraint can be expanded into 16 simpler constraints:
+should match the pattern on the right hand side.  Here the symbols
+`<1>` and `<2>` represent variables in the constraint language, whose
+values are to be determined by the corresponding group in the regex.
+This single constraint can be expanded into 16 simpler constraints:
 
 ```haskell
 "1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)
@@ -119,23 +119,24 @@ between these options is clear just by considering the constructors
 (Add and Mul).  The user could expand the widgets to explore the
 choices further before making a choice.  In this example, we can make
 a choice immediately: multiplication should take precedence over
-addition, so we select the second example.  This causes the (unfolded)
-example to be added to the specification.
+addition, so we select the first example (`Add` at the root indicates
+it has lower precedence).  This causes the (unfolded) example to be
+added to the specification.
 
 ```haskell
-"1 + 2 * 3" == Mul (Add (Num 1) (Num 2)) (Num 3)
+"1 + 2 * 3" == Add (Num 1) (Mul (Num 2) (Num 3))
 ```
 
 As we did for associativity, we can manually generalize this rule to
 other operators:
 
 ```haskell
-"1 ([+-]) 2 ([*/]) 3" == <2> (<1> (Num 1) (Num 2)) (Num 3)
+"1 ([+-]) 2 ([*/]) 3" == <1> (Num 1) (<2> (Num 3) (Num 3))
 ```
 
-Again, the symbols <1> and <2> denote variables whose values should be
-determined by the first and second groups in the regex, respectively.
-This would expand to:
+Again, the symbols `<1>` and `<2>` denote variables whose values
+should be determined by the first and second groups in the regex,
+respectively.  This would expand to:
 
 ```haskell
 "1 + 2 * 3" == Mul (Add (Num 1) (Num 2)) (Num 3)
@@ -148,7 +149,7 @@ Now we have have two conflicting constraints:
 
 ```haskell
 "1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
-"1 ([+-]) 2 ([*/]) 3" == <2> (<1> (Num 1) (Num 2)) (Num 3)
+"1 ([+-]) 2 ([*/]) 3" == <1> (Num 1) (<2> (Num 2) (Num 3))
 ```
 
 The intent is for the second to override the first.  One way to
@@ -169,7 +170,7 @@ specification is:
 "1 * 2"         == Mul (Num 1) (Num 2)
 "1 / 2"         == Div (Num 1) (Num 2)
 "1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
-"1 ([+-]) 2 ([*/]) 3"     == <2> (<1> (Num 1) (Num 2)) (Num 3)
+"1 ([+-]) 2 ([*/]) 3"     == <1> (Num 1) (<2> (Num 2) (Num 3))
 ```
 
 From this, a sufficiently powerful synthesis engine (with reasonable
