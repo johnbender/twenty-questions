@@ -66,7 +66,7 @@ In many cases random inputs and the corresponding outputs are not sufficient to 
 
 The following examples are included to give a more comprehensive overview of how and when Twenty Questions might be used by a developer:
 
-* [Python, OAuth, Codehint](./oauth.md) - Documentation replacement.
+* [OAuth and Codehint](./oauth.md) - Documentation replacement.
 * [Parser](./parser.md) - Complex program synthesis.
 * [Key/Value Store](./key-value-store.md) - Data structure differentiation.
 

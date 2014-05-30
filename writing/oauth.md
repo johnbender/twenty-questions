@@ -1,4 +1,4 @@
-# OAuth, Python, and CodeHint
+# OAuth and CodeHint
 
 It's frequently the case that developers are assigned a task or tasks for which there is an existing library that handles most of the details involved ("glue programming"). In these cases the library is a useful abstraction that centralizes the responsibility for correctness and requires only that the developer "learn the library" and not necessarily the details of the task itself. Learning the library though is not always a trivial task.
 
@@ -17,6 +17,10 @@ authorize_url = 'http://twitter.com/oauth/authorize'
 
 request_token = get_request_token(request_token_url)
 ```
+
+TODO test the token request may diff but may not
+TODO spec by example using the url
+TODO malicious candidates
 
 From the library [README](https://github.com/simplegeo/python-oauth2#twitter-three-legged-oauth-example) the follow up steps in a command line setting are:
 

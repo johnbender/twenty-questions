@@ -1,0 +1,43 @@
+* outline
+** intro
+*** proceed from existing tools
+*** build intuition
+*** show improvements to existing approaches
+*** move beyond simple candidates construction to example based synth
+** synthesis
+*** cool but limited
+**** why
+*** problems with synthesis
+*** arbitrary candidate (jungloid, sumit gulwani)
+*** many candidates (codehint)
+** jungloid
+*** straight to expression
+*** example
+**** more can be done to explore options
+** codehint
+*** manual exploration
+**** issues
+***** arrive with a single important test case
+***** requires a debugger
+*** example
+**** more can be done to explore options
+** tq
+*** explicit information about traces
+*** other tools for exploration
+*** not limited to types as a result
+*** manual exploration as last resort
+** "spec by example"
+*** high level
+*** example
+**** how this expands on codehint/jungloid not doing enough
+**** :auto
+**** discuss how a trace might be used to find interesting inputs
+*** manual exploration not limited to final expression
+**** improvements
+***** discovers new and interesting examples
+***** summarize differentiation without user intervention
+***** orders interesting examples
+* examples
+** oauth
+*** input and output not helpful
+*** spec example is url input
