@@ -66,9 +66,10 @@ In many cases random inputs and the corresponding outputs are not sufficient to 
 
 The following examples are included to give a more comprehensive overview of how and when Twenty Questions might be used by a developer:
 
-- [python, oath, codehint](./oauth.md)
-- [parser](./parser.md)
-<
+* [Python, OAuth, Codehint](./oauth.md) - Documentation replacement.
+* [Parser](./parser.md) - Complex program synthesis.
+* [Key/Value Store](./key-value-store.md) - Data structure differentiation.
+
 ## Footnotes
 
 1. In fact it's reasonable to consider Twenty Questions as an augmented REPL and this makes intuitive sense given that the goal is exploration.
