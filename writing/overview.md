@@ -15,7 +15,7 @@ tq > find [Int] -> Int
 ...
 [10] head
 tq >`
-``
+```
 
 The `find` command adds a constraint to the current specification and then rebuilds the, currently empty, list of satisfying expressions. The specification need not be limited to types but can constrain over each of the dimensions measured by Twenty Questions: inputs, outputs, traces, and types. This particular specification provides a fairly large set of candidates so the next thing to do is likely to differentiate those candidates.
 
