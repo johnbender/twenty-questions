@@ -1,6 +1,12 @@
 # Twenty Questions
 
+Twenty Questions is designed to be an interactive program construction and exploration tool. It takes little or no specification input and works with the user to find the program they have in mind through questions, specification refinements, and access to auxiliary information about program components.
+
 ## Approach
+
+Here we provide a short overview of the various functions and capabilities for reference while reading through the example use cases.
+
+
 
 - start with spec
  - possibly empty
