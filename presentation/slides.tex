@@ -1,0 +1,187 @@
+\documentclass{beamer}
+\usefonttheme{serif}
+\usepackage{bbold}
+\usepackage{semantic}
+\usepackage{palatino}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{xstring}
+\usepackage{syntax}
+\usepackage{xcolor}
+
+\renewcommand{\syntleft}{\normalfont\itshape}
+\renewcommand{\syntright}{}
+
+\newcommand{\highlight}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+
+\newcommand{\cmp}[2]{
+  \mathcal{#1}\,|[ \mathtt{ \StrSubstitute{#2}{ }{\ } } |]
+}
+
+\lstdefinelanguage{diff}{
+  morecomment=[f][\color{blue}]{@@},
+  morecomment=[f][\color{red}]-,
+  morecomment=[f][\color{green}]+,
+  morecomment=[f][\color{magenta}]{---},
+  morecomment=[f][\color{magenta}]{+++},
+}
+
+\definecolor{solarized@base03}{HTML}{002B36}
+\definecolor{solarized@base02}{HTML}{073642}
+\definecolor{solarized@base01}{HTML}{586e75}
+\definecolor{solarized@base00}{HTML}{657b83}
+\definecolor{solarized@base0}{HTML}{839496}
+\definecolor{solarized@base1}{HTML}{93a1a1}
+\definecolor{solarized@base2}{HTML}{EEE8D5}
+\definecolor{solarized@base3}{HTML}{FDF6E3}
+\definecolor{solarized@yellow}{HTML}{B58900}
+\definecolor{solarized@orange}{HTML}{CB4B16}
+\definecolor{solarized@red}{HTML}{DC322F}
+\definecolor{solarized@magenta}{HTML}{D33682}
+\definecolor{solarized@violet}{HTML}{6C71C4}
+\definecolor{solarized@blue}{HTML}{268BD2}
+\definecolor{solarized@cyan}{HTML}{2AA198}
+\definecolor{solarized@green}{HTML}{859900}
+
+\lstset{
+  upquote=true,
+  columns=fixed,
+  tabsize=2,
+  extendedchars=true,
+  breaklines=true,
+  numbersep=5pt,
+  rulesepcolor=\color{solarized@base03},
+  numberstyle=\tiny\color{solarized@base01},
+  basicstyle=\ttfamily,
+  keywordstyle=\color{solarized@green},
+  stringstyle=\color{solarized@cyan}\ttfamily,
+  identifierstyle=\color{solarized@blue},
+  commentstyle=\color{solarized@base01},
+  emphstyle=\color{solarized@red}
+}
+
+% There are many different themes available for Beamer. A comprehensive
+% list with examples is given here:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different
+% one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+\usetheme{boxes}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+%\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+\title{Spec by Example}
+
+% A subtitle is optional and this may be deleted
+\subtitle{Interactive Specification Refinement}
+
+\author{Matt Brown, John Bender}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\date{CS 239, Spring 2014}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Programming Languages and Systems, Computer Science}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+
+% Let's get started
+\begin{document}
+
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{0pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\setlength{\belowdisplayshortskip}{0pt}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Interactive Specification Refinement}
+  \begin{block}{Spec by Example by Example}
+    Writing specifications is hard, synthesis is inaccurate.
+
+    \begin{itemize}
+      \item define synthesis
+      \item existing work
+      \item areas for improvement
+      \item advanced synthesis
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Interactive Specification Refinement}
+  \begin{block}{Synthesizzle or Synthesnooze}
+    Synthesis is very cool, but currently very limited
+
+    \begin{itemize}
+      \item automatic selection inaccurate
+      \item manual selection tedious
+      \item only works for small domains
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Many Jungloids}
+  \begin{block}{Bienvenido a la Jungla}
+    Initial type based synthesis work out of Berkley
+
+    \begin{itemize}
+      \item ``spec'' is a type pair, e.g. $(FactoryFactory, FactoryBean)$
+      \item results ranked by $|$expressions$|$
+      \item no tools for refinement
+      \item simple (boring?) test cases
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Many Jungloids}
+  add initial twenty questions example
+\end{frame}
+
+
+\end{document}
