@@ -1,0 +1,57 @@
+\begin{frame}{CodeHint}
+  \begin{block}{Manual Candidate Set Refinement}
+    Like Jungloid, requires debugger, manual refinement
+
+    \begin{itemize}
+      \item ``spec'', e.g. $BeanFactoryFactory$ + debugging context
+      \item results ranked by $|$expressions$|$
+      \item refinement by further execution
+      \item refinement by common methods, e.g. $toString$
+    \end{itemize}
+
+    TODO diagram float bottom right
+  \end{block}
+\end{frame}
+
+\begin{frame}{CodeHint}
+  \begin{block}{Break and Burn}
+    Stop at a breakpoint, find an expression
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/codehint-1}
+    \end{example}
+  \end{block}
+\end{frame}
+
+\begin{frame}{CodeHint}
+  \begin{block}{Refine by Execution}
+    Continue by executing each of the expressions
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/codehint-2}
+    \end{example}
+  \end{block}
+\end{frame}
+
+\begin{frame}{CodeHint}
+  \begin{block}{Refine by Comparison}
+    Continue by executing each of the expressions
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/codehint-3}
+    \end{example}
+  \end{block}
+\end{frame}
+
+\begin{frame}{CodeHint}
+  \begin{block}{Noteworthy Details}
+    CodeHint has limitations outside its manual nature
+
+    \begin{itemize}
+      \item debugging context is restrictive
+      \item side effects impossible to account for
+      \item candidate differentiation is manual
+      \item full knowledge of desired outcome required
+    \end{itemize}
+  \end{block}
+\end{frame}

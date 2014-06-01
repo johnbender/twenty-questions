@@ -1,0 +1,12 @@
+...
+codehint > :find
+[1] sum     : 0
+[2] product : 1
+...
+[10] head   : error
+codehint > :continue
+[1] sum     : IO "0"
+[2] product : IO "1"
+...
+[10] head   : error
+codehint >

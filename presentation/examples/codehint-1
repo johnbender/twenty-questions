@@ -1,0 +1,11 @@
+$ codehint app.hs
+stopped at 3:15 in app.hs:
+1    import Foo
+2
+3 => main = print (? [1,2,3])
+codehint > :find
+[1] sum     : 0
+[2] product : 1
+...
+[10] head   : error
+codehint >

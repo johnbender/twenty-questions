@@ -1,6 +1,5 @@
 \documentclass{beamer}
 \usefonttheme{serif}
-%\usepackage{bbold}
 \usepackage{semantic}
 \usepackage{palatino}
 \usepackage{listings}
@@ -53,7 +52,7 @@
   numbersep=5pt,
   rulesepcolor=\color{solarized@base03},
   numberstyle=\tiny\color{solarized@base01},
-  basicstyle=\ttfamily,
+  basicstyle=\ttfamily\footnotesize,
   keywordstyle=\color{solarized@green},
   stringstyle=\color{solarized@cyan}\ttfamily,
   identifierstyle=\color{solarized@blue},
@@ -176,54 +175,11 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Jungloid}
-  \begin{block}{Bienvenido al Jungloid}
-    Initial type based synthesis work out of Berkley
+\input{jungloid}
 
-    \begin{itemize}
-      \item ``spec'', e.g. $(FactoryFactory, BeanFactory)$ *
-      \item results ranked by $|$expressions$|$
-      \item no tools for refinement
-      \item simple (boring?) test cases
-    \end{itemize}
+\input{codehint}
 
-    TODO diagram float bottom right
-  \end{block}
-\end{frame}
-
-\begin{frame}{Jungloid}
-  \begin{block}{From Integers to an Integer}
-    No help past candidate generation and ranking.
-
-    \begin{example}
-      \lstinputlisting[language=bash]{examples/jungloid}
-    \end{example}
-  \end{block}
-\end{frame}
-
-\begin{frame}{CodeHint}
-  \begin{block}{Manual Candidate Set Refinement}
-    Like Jungloid, requires debugger, manual refinement
-
-    \begin{itemize}
-      \item ``spec'', e.g. $BeanFactoryFactory$ + debugging context
-      \item results ranked by $|$expressions$|$
-      \item refinement by further execution
-      \item refinement by common methods, e.g. $toString$
-    \end{itemize}
-
-    TODO diagram float bottom right
-  \end{block}
-\end{frame}
-
-\begin{frame}{CodeHint}
-  \begin{block}{Break and Burn}
-
-    \begin{example}
-      \lstinputlisting[language=bash]{examples/codehint}
-    \end{example}
-  \end{block}
-\end{frame}
+\input{tq-ints}
 
 \input{parser}
 

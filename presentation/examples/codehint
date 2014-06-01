@@ -1,7 +1,0 @@
-$ codehint
-jungloid > :find ([Int], Int)
-[1] sum     : 0
-[2] product : 1
-...
-[10] head   : error
-jungloid >
