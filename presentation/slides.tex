@@ -161,8 +161,56 @@
 \end{frame}
 
 \begin{frame}{Automatic Program Construction}
-  \begin{block}{Have the Computer Build It!}
-    define synthesis
+  \begin{block}{Synthesis: Have the Computer Build It!}
+    \begin{itemize}
+    \item{Computer {\em derives} program that implements a
+        specification.}
+    \item{Requires {\em Generative} specifications.}
+    \item{E.g. A red 4-wheeled gasoline-powered machine large enough
+        for a person to sit in comfortably, that is controlled using a
+        wheel and pedals, $\dots$}
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Discovery: Have the Computer Find It!}
+    \begin{itemize}
+    \item{Computer {\em chooses} a program from a space of candidates.}
+    \item{Requires {\em discriminative} specifications.}
+    \item{E.g. ``The red one''.}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Specification by Example}
+\begin{block}{How can we discriminate between programs?}
+  By how they {\em behave} on particular inputs.
+
+  E.g. ``doesn't crash on (0,0)'' is sufficient to discriminate
+  between multiplication and division.
+
+  Not useful for synthesis! (too little information)
+
+  ``doesn't crash on (0,0)'' can't discriminate between addition and
+  multiplication.
+
+  Efficacy of a discriminative spec depends on the candidate space.
+
+\end{block}
+\end{frame}
+
+\begin{frame}{Twenty Questions}
+  Goal: help user write effective discriminative specs for a
+  particular candidate space.
+
+  A discriminative spec is effective if some (but not all) candidates
+  satisfy it.
+
+  \begin{block}{Twenty Questions}
+  \begin{enumerate}
+  \item{Search for inputs on which candidates behave differently.}
+  \item{Ask user to choose desired behavior for a particular input.}
+  \item{Rinse and repeat until only one candidate remains.}
+  \end{enumerate}
   \end{block}
 \end{frame}
 
