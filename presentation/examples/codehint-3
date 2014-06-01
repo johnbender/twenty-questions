@@ -1,12 +1,11 @@
 ...
 codehint > :find
-[1] sum     : 0
-[2] product : 1
+[1] sum     : 3
+[2] product : 2
 ...
-[10] head   : error
-codehint > show ?
-[1] sum     : "0"
-[2] product : "1"
+[10] head   : 1
+codehint > :spec (? [1,2]) > 1
+[1] sum     : "3"
+[2] product : "2"
 ...
-[10] head   : error
 codehint >

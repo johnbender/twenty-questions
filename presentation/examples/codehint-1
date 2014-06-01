@@ -2,10 +2,10 @@ $ codehint app.hs
 stopped at 3:15 in app.hs:
 1    import Foo
 2
-3 => main = print (? [1,2,3])
+3 => main = print (? [1,2])
 codehint > :find
-[1] sum     : 0
-[2] product : 1
+[1] sum     : 3
+[2] product : 2
 ...
-[10] head   : error
+[10] head   : 1
 codehint >
