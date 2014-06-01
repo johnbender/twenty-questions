@@ -58,7 +58,10 @@
   stringstyle=\color{solarized@cyan}\ttfamily,
   identifierstyle=\color{solarized@blue},
   commentstyle=\color{solarized@base01},
-  emphstyle=\color{solarized@red}
+  emphstyle=\color{solarized@red},
+  framextopmargin=0pt,
+  frame=lines,
+  rulecolor=\color{solarized@base2}
 }
 
 % There are many different themes available for Beamer. A comprehensive
@@ -146,18 +149,24 @@
   \begin{block}{Spec by Example by Example}
     Writing specifications is hard, synthesis is inaccurate.
 
-    \begin{itemize}
+    \begin{enumerate}
       \item define synthesis
       \item existing work
       \item areas for improvement
       \item advanced synthesis
-    \end{itemize}
+    \end{enumerate}
   \end{block}
 \end{frame}
 
-\begin{frame}{Interactive Specification Refinement}
+\begin{frame}{Automatic Program Construction}
+  \begin{block}{Have the Computer Build It!}
+    define synthesis
+  \end{block}
+\end{frame}
+
+\begin{frame}{Automatic Program Construction}
   \begin{block}{Synthesizzle or Synthesnooze}
-    Synthesis is very cool, but currently very limited
+    Synthesis is very cool, but currently limited
 
     \begin{itemize}
       \item automatic selection inaccurate
@@ -167,21 +176,53 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Many Jungloids}
-  \begin{block}{Bienvenido a la Jungla}
+\begin{frame}{Jungloid}
+  \begin{block}{Bienvenido al Jungloid}
     Initial type based synthesis work out of Berkley
 
     \begin{itemize}
-      \item ``spec'' is a type pair, e.g. $(FactoryFactory, FactoryBean)$
+      \item ``spec'', e.g. $(FactoryFactory, BeanFactory)$ *
       \item results ranked by $|$expressions$|$
       \item no tools for refinement
       \item simple (boring?) test cases
     \end{itemize}
+
+    TODO diagram float bottom right
   \end{block}
 \end{frame}
 
-\begin{frame}{Many Jungloids}
-  add initial twenty questions example
+\begin{frame}{Jungloid}
+  \begin{block}{From Integers to an Integer}
+    No help past candidate generation and ranking.
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/jungloid}
+    \end{example}
+  \end{block}
+\end{frame}
+
+\begin{frame}{CodeHint}
+  \begin{block}{Manual Candidate Set Refinement}
+    Like Jungloid, requires debugger, manual refinement
+
+    \begin{itemize}
+      \item ``spec'', e.g. $BeanFactoryFactory$ + debugging context
+      \item results ranked by $|$expressions$|$
+      \item refinement by further execution
+      \item refinement by common methods, e.g. $toString$
+    \end{itemize}
+
+    TODO diagram float bottom right
+  \end{block}
+\end{frame}
+
+\begin{frame}{CodeHint}
+  \begin{block}{Break and Burn}
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/codehint}
+    \end{example}
+  \end{block}
 \end{frame}
 
 \input{parser}
