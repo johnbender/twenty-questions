@@ -41,3 +41,119 @@
 ** oauth
 *** input and output not helpful
 *** spec example is url input
+
+** parser
+Parsers are tedious, complicated, and hard to get right.
+
+Issues: associativity, precedence, left-recursion.
+
+Synthesizing a parser and a pretty printer in 22 questions
+
+
+
+*** step 1: define data type
+Grammar is
+
+t ::= [1-9][0-9]* | (t) | t + t | t - t | t * t | t / t
+
+Haskell data type is:
+
+data T = Num Int | Par T | Add T T | Sub T T | Mul T T | Div T T
+
+*** step 2: request a parser
+
+parseT :: String -> T
+
+parseT = ???
+
+Use examples to give specification, and synthesize the definition.
+
+*** step 3: parsers from I/O examples
+
+For each (leaf node in AST / terminal in grammar), system asks for an
+example input.  In our AST there is only one leaf node: Num Int.  We
+can adopt a heuristic to suggest a parser.
+
+First question ("how do we parse Num nodes?"):
+parse "123" == Num 123
+(Y/N)
+Answer: Y
+
+From this answer, we can generalize to parse arbitrary integers.
+
+Next question ("how do we parse Paren nodes?"):
+parse X == Paren (Num 0)
+
+Answer: X = "(0)"
+
+Next question ("how do we parse Add nodes?"):
+parse X == Add (Num 1) (Num 2)
+
+Answer: X = "1 + 2"
+
+In this case, we don't suggest a default parser, so the user gives us
+an example.  We ask for an input that parses to a simple Add
+expression.  Use heuristics to find a "simple" expression.
+
+We ask 3 similar questions to get examples for how to parse Sub, Mul,
+and Div expressions.
+
+*** step 4: resolving associativity ambiguities
+
+Next, the system uses the rules established so far to detect
+ambiguities. This can be done simply by using the rules to synthesize
+a pretty printer (T -> String).  We then generate and print example
+ASTs, to produce example strings in the language.  We start with small
+examples:
+
+1 + 2 + 3
+1 + 2 - 3
+1 + 2 * 3
+1 + 2 / 3
+...
+
+An ambiguity is detected when two distinct ASTs are printed to the
+same string.
+
+print (Add (Add (Num 1) (Num 2)) (Num 3)) == "1 2 3"
+print (Add (Num 1) (Add (Num 2) (Num 3))) == "1 2 3"
+
+
+1 + (2 + 3)      (1 + 2) + 3
+-----------      -----------
+    +                 +
+  1   +             +   3
+    2   3         1   2
+
+
+Which parse tree is correct depends on the desired associativity of +.
+The system will ask a question to determine:
+
+parse "1 + 2 + 3" == 
+  (1) Add (Num 1) (Add (Num 2) (Num 3))
+  (2) Add (Add (Num 1) (Num 2)) (Num 3)
+Select 1 or 2:
+Answer: 2
+
+Here we choose to make + be left-associative, by selecting the second
+option.
+
+Similar selections resolve the associativity ambiguities for Sub, Mul,
+and Div.
+
+*** step 5: resolving precedence ambiguities
+
+*** step 6: adding parenthesis
+We add an additional example, to teach the system how to handle
+parenthesis.  This allows us to override the precedences we've set.
+
+parse "(0)" == Num 0
+
+*** step 7: a complete spec in 22 examples
+
+parse "123"       == Num 123
+parse "1 + 2"     == Add (Num 1) (Num 2)                (x4)
+parse "1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)  (x16)
+parse "(0)"       == Num 0
+
+

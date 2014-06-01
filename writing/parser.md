@@ -136,7 +136,7 @@ respectively.  This would expand to:
 Now we have have two conflicting constraints:
 
 ```haskell
-"1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
+"1 ([+/*-]) 2 ([+/*-]) 3" == <2> (<1> (Num 1) (Num 2)) (Num 3)
 "1 ([+-]) 2 ([*/]) 3"     == <1> (Num 1) (<2> (Num 2) (Num 3))
 ```
 
@@ -147,6 +147,18 @@ because it came later in the specification.  Alternatively, we can
 view the second as more specific than the first, and say that more
 specific constraints take precedence over more general ones.
 Formalizing this notion of specificity would require careful thought.
+
+Our last constraint lets the user override the precedence with
+parentheses.  The simplest way to specify this is with an example that
+doesn't involve precedence at all:
+
+```haskell
+"\(1\)" == Num 1
+```
+
+When we generalize this constraint, it enforces that parentheses be
+balanced, and that the parse of the text within the parentheses is not
+affected by the outer context.
 
 At this point, we should have a fully specified parser.  The complete
 specification is:
@@ -159,9 +171,19 @@ specification is:
 "1 / 2"         == Div (Num 1) (Num 2)
 "1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
 "1 ([+-]) 2 ([*/]) 3"     == <1> (Num 1) (<2> (Num 2) (Num 3))
+"\(1\)"         == Num 1
 ```
 
 From this, a sufficiently powerful synthesis engine (with reasonable
 heuristics built-in) should be able to synthesize the desired parser.
 All without the programmer having to learn tricks for establishing
 associativity and precedence, or dealing with left-recursion.
+
+We can use the same specification to generate a pretty-printer for the
+language that is a right inverse of the parser. Pretty-printer is
+total, but parser is partial.  In particular, parser is defined on any
+output of the pretty printer.
+
+TODO: twenty questions: generate candidates, ask questions. User can
+allow the system to ask the 16 questions to establish precedence
+rules, or can write the single regex rule.
