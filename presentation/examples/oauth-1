@@ -1,5 +1,5 @@
 $ tq
-tq > import EGCorpOauth
+tq > import EGCorpOAuth
 tq > let rt  = ReqToken "..."
 tq > let url = Url "..."
 tq > :find (rt, url) -> AccToken

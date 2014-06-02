@@ -1,7 +1,7 @@
 $ jungloid
 jungloid > :find ([Int], Int)
-[1] sum     : 0
-[2] product : 1
+[1] sum
+[2] product
 ...
-[10] head   : error
+[10] head
 jungloid >
