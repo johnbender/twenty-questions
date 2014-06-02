@@ -7,5 +7,4 @@ codehint > :find
 codehint > :spec (? [1,2]) > 1
 [1] sum     : "3"
 [2] product : "2"
-...
 codehint >

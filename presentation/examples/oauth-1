@@ -1,0 +1,11 @@
+$ tq
+tq > import EGCorpOauth
+tq > let rt  = ReqToken "..."
+tq > let url = Url "..."
+tq > :find (rt, url) -> AccToken
+input                                 : (rt, url)
+=1==================================================
+[1] acc_token . pin . auth_url . fst  : AccToken "..."
+[2] acc_token . pin . auth_url . snd  : AccToken "..."
+[3] acc_token . pin . malintent . fst : AccToken "..."
+tq >
