@@ -2,8 +2,24 @@
 \newcommand{\Q}{{\color{red}Q:}\hspace{2mm}}
 \newcommand{\A}{{\color{blue}A:}\hspace{2mm}}
 
+\begin{frame}[fragile]
+\frametitle{Synthesis by Twenty Questions}
+\begin{itemize}
+\item{So far Twenty Questions is all about discovery}
+\item{What about synthesis?}
+\item{Can help {\em refine} imprecise specifications}
+\end{itemize}
+
+\begin{block}{Synthesis Algorithm}
+\begin{enumerate}
+\item{Synthesize candidates for initial specification}
+\item{Use discovery algorithm to find desired candidate}
+\end{enumerate}
+\end{block}
+\end{frame}
+
 \begin{frame}{A parser in 22 questions}
-  Define a parser for arithmetic expressions in a series of questions.
+  Define a parser for arithmetic expressions by example.
 
 \[
   t ::= \langle number \rangle ~|~ ( t ) ~|~ t + t ~|~ t - t ~|~ t * t ~|~ t / t
@@ -67,7 +83,7 @@ parseT = ???
 \frametitle{Bootstrapping Examples}
 
 \begin{itemize}
-\item Collect small examples of each case
+\item Collect a simple example for each case
 \item Generalize to produce an initial specification
 \end{itemize}
 
@@ -96,7 +112,7 @@ $\dots$
 \frametitle{Detecting Ambiguity}
 
 The specification can be used to synthesize a {\em pretty-printer},
-which {\em must be} the right inverse of a parser:
+which {\em must} be the right inverse of a parser:
 
 \begin{lstlisting}[mathescape, language=haskell]
 print :: T -> String
@@ -108,7 +124,7 @@ $\forall$t:T. parse (print t) == t
 \item{If \lsthaskell{print} maps two distinct ASTs to the same
     string, our specification is ambiguous}
 \item{Automatically detect ambiguities (e.g. systematic search)}
-\item{Ask questions to resolve them}
+\item{Ask questions to resolve ambiguities}
 \end{itemize}
 \end{frame}
 

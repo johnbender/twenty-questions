@@ -161,51 +161,57 @@
 \end{frame}
 
 \begin{frame}{Automatic Program Construction}
-  \begin{block}{Synthesis: Have the Computer Build It!}
+  \begin{block}{Synthesis: Just build it for me!}
     \begin{itemize}
     \item{Computer {\em derives} program that implements a
         specification.}
     \item{Requires {\em Generative} specifications.}
-    \item{E.g. A red 4-wheeled gasoline-powered machine large enough
-        for a person to sit in comfortably, that is controlled using a
-        wheel and pedals, $\dots$}
+    \item{``A red 4-wheeled gasoline-powered machine large enough for
+        a person to sit in comfortably, that is controlled using a
+        steering wheel and pedals, $\dots$''}
     \end{itemize}
   \end{block}
 
-  \begin{block}{Discovery: Have the Computer Find It!}
+  \begin{block}{Discovery: Just find it for me!}
     \begin{itemize}
-    \item{Computer {\em chooses} a program from a space of candidates.}
+    \item{Computer {\em chooses} a program from a set of candidates.}
     \item{Requires {\em discriminative} specifications.}
-    \item{E.g. ``The red one''.}
+    \item{``The red one''.}
     \end{itemize}
   \end{block}
 \end{frame}
 
 \begin{frame}{Specification by Example}
 \begin{block}{How can we discriminate between programs?}
-  By how they {\em behave} on particular inputs.
+\begin{itemize}
+\item{By example: how they {\em behave} on particular inputs.}
+  \item{``defined on (0,0)'' can distinguish $\times$ from $\div$}
+  \item{``defined on (0,0)'' can't distinguish $\times$ from $+$}
+\end{itemize}
+\end{block}
 
-  E.g. ``doesn't crash on (0,0)'' is sufficient to discriminate
-  between multiplication and division.
-
-  Not useful for synthesis! (too little information)
-
-  ``doesn't crash on (0,0)'' can't discriminate between addition and
-  multiplication.
-
-  Efficacy of a discriminative spec depends on the candidate space.
-
+\begin{block}{Example examples}
+\begin{itemize}
+\item{Throws an exception on input \hspace{1mm}-1}
+\item{Returns 1 on input \hspace{1mm}-1}
+\item{Deletes file ``/tmp/foo'' on input ``foo''}
+\item{Loads ``Foo.class'' on input ``Foo''}
+\end{itemize}
 \end{block}
 \end{frame}
 
 \begin{frame}{Twenty Questions}
-  Goal: help user write effective discriminative specs for a
-  particular candidate space.
+  \begin{center}Help user provide useful examples.\end{center}
 
-  A discriminative spec is effective if some (but not all) candidates
-  satisfy it.
+  \begin{block}{What makes an example useful?}
+  \begin{itemize}
+  \item{Distinguishes some candidates from others}
+  \item{Some (but not all) candidates exhibit example behavior}
+  \item{Usefulness relative to the set of candidates!}
+  \end{itemize}
+  \end{block}
 
-  \begin{block}{Twenty Questions}
+  \begin{block}{Discovery Algorithm}
   \begin{enumerate}
   \item{Search for inputs on which candidates behave differently.}
   \item{Ask user to choose desired behavior for a particular input.}
