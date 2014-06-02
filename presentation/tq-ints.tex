@@ -13,3 +13,47 @@
     TODO diagram float bottom right
   \end{block}
 \end{frame}
+
+
+\begin{frame}{Twenty Questions}
+  \begin{block}{Is it alive?}
+    Provide a spec, \textit{automatically} differentiate
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/tq-1}
+    \end{example}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Twenty Questions}
+  \begin{block}{Is it a person?}
+    Decisions extend the specification
+
+    \begin{example}
+      \lstinputlisting[language=bash]{examples/tq-2}
+    \end{example}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Twenty Questions}
+  TODO take this further and use traces to present ``interesting inputs''
+\end{frame}
+
+
+\begin{frame}{Twenty Questions}
+  \begin{block}{Noteworthy Details}
+    There are limitations here too
+
+    \begin{itemize}
+      \item exponentially small \textit{interesting} inputs
+      \item side effects mostly ignored
+      \item random inputs confusing at best
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Twenty Questions}
+  TODO should we walk through our thinking at this point? Discuss how we arrived at the conclusion that trace information is crucial for input generation and further expression candidate refinement
+
+  would make for a nice segue into the oauth example that uses traces directly
+\end{frame}

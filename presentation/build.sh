@@ -2,6 +2,6 @@
 pdflatex -interaction=nonstopmode $1
 
 # watch for alterations
-while inotifywait $1 ; do
+while inotifywait *.tex examples/* ; do
   pdflatex -interaction=nonstopmode $1 | grep -i -B20 error
 done

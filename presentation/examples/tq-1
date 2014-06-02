@@ -1,0 +1,10 @@
+$ tq
+tq > :find [Int] -> Int
+input   : []
+----------------------------------------
+output  : OK  | output   : error
+=1==============2=======================
+sum     : 0   | head     : error
+product : 1   | foo      : error
+...
+tq >

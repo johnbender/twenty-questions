@@ -1,0 +1,12 @@
+...
+output  : OK  | output   : error
+=1==============2=======================
+sum     : 0   | head     : error
+product : 1   | foo      : error
+...
+tq > 1
+input   : [1,2]
+=1==============2=======================
+sum     : 3   | product  : 2
+...
+tq >

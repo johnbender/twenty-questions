@@ -1,0 +1,14 @@
+...
+tq > :find (rt, url) -> AccToken
+input                                 : (rt, url)
+=1==================================================
+[1] acc_token . pin . auth_url . fst  : AccToken "..."
+  - uri "example.co/..." url
+...
+[2] acc_token . pin . auth_url . snd  : AccToken "..."
+  - http_get "example.co/request_token..."
+...
+[3] acc_token . pin . malintent . fst : AccToken "..."
+  - http_get "straight-stealin.shady.tv/..."
+...
+tq >
