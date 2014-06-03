@@ -8,19 +8,15 @@ The central difficulty is finding the set of functions and data that are require
 
 ## On Closer Examination
 
-As stated, the user has a request token and possibly a set of URLs but doesn't know the necessary method calls, server communications, and user interactions required to get a long term access token (long term authorization).
+As stated, the user has a request token and possibly a url but doesn't know the necessary method calls, server communications, and user interactions required to get a long term access token (long term authorization).
 
-```python
-request_token_url = 'http://twitter.com/oauth/request_token'
-access_token_url = 'http://twitter.com/oauth/access_token'
-authorize_url = 'http://twitter.com/oauth/authorize'
-
-request_token = get_request_token(request_token_url)
 ```
-
-TODO test the token request may diff but may not
-TODO spec by example using the url
-TODO malicious candidates
+$ tq
+tq > import EGCorpOAuth
+tq > let rt  = ReqToken "..."
+tq > let url = Url "..."
+tq > :find (rt, url) -> AccToken
+```
 
 From the library [README](https://github.com/simplegeo/python-oauth2#twitter-three-legged-oauth-example) the follow up steps in a command line setting are:
 
@@ -34,18 +30,24 @@ The ideal output of a tool meant to stand in for documentation in this example, 
 
 <iframe width="420" height="315" src="https://www.youtube.com/embed/qn5yIEe9kks#t=231" frameborder="0" allowfullscreen></iframe>
 
-In the CodeHint demo above, the approach is centered around types and so the mapping to our example might be that the user has some instance of `RequestToken` and desires to have an instance of `AccessToken`. At a debugger breakpoint CodeHint will search for methods [1] that can be composed with data that is in scope at the breakpoint to satisfy an assignment to a variable of given type. Under the assumption that a set of appropriate methods exist for this purpose, it's not hard to image that it would be able to find them and compose them to match the output type the user needs.
+In the CodeHint demo above, the approach is centered around runtime types and so the mapping to our example might be that the user has some a URL and request token in scope and desires to have an instance of an access token. At a debugger breakpoint CodeHint will search for methods in scope [1] that can be composed with data that is in scope at the breakpoint to satisfy an assignment to a variable of a given type. Under the assumption that a set of appropriate methods exist for this purpose, it's not hard to image that it would be able to find them and compose them to match the output type the user needs. For example:
 
-```python
-access_token = request_access_token(get_pin(auth_url(request_token))
+```
+tq > :find (rt, url) -> AccToken
+input                                 : (rt, url)
+=1==================================================
+[1] acc_token . pin . auth_url . fst  : AccToken "..."
+[2] acc_token . pin . auth_url . snd  : AccToken "..."
+[3] acc_token . pin . malintent . fst : AccToken "..."
+tq >
 ```
 There are several possible issues with this approach:
 
 First, a debugging context is assumed/required. That is the tool requires a large amount of very specific context when building its satisfying candidate expressions. You might also look at this context as a single very specific input to the expression to the exclusion of all others and a limit on the ability of the developer to explore other possibilities. More concretely, if you watch the first demo closely the `jtree` parameter is used in the generated expressions to produce the desired `window` object. Being constrained by the context means that if the developer knows of some other readily accessible object not in scope that might also be of interest the tool can't help.
 
-Second, filtering a large list of candidates requires continued execution (which is not always an option) or some important foreknowledge of the desired output (e.g. "Eve" in the final demo of the video). To continue with the final example of the demo, if the user has some vague notion that they want data a the leaf of a tree but they don't have perfect knowledge of the shape or content of that data, then filtering in the manner prescribed will be difficult.
+Second, filtering a large list of candidates requires continued execution (which is not always an option) **or** some important foreknowledge of the desired output (e.g. "Eve" in the final demo of the video). To continue with the final example of the demo, if the user has some vague notion that they want data at the leaf of a tree but they don't have perfect knowledge of the shape or content of that data, then filtering in the manner prescribed will be difficult.
 
-Finally, the flows for the first and second versions of OAuth are not the same, as the second version can jump strait to forwarding the user to the authorization url without having to gather a request token. Given two nearly identical inputs and outputs (tokens) it's not clear how the developer would decide or even differentiate between the two candidate expressions using the CodeHint approach.
+Finally, the flows for the first and second versions of OAuth are not the same, as the second version can jump strait to forwarding the user to the authorization url without having to gather a request token. Given two nearly identical inputs and outputs (tokens) it's not clear how the developer would decide or even differentiate between the two candidate expressions using either of the CodeHint approaches.
 
 ## Twenty Questions
 
@@ -54,14 +56,13 @@ In contrast, Twenty Questions aims to not only generate relevant candidates but 
 Clearly the REPL described in the overview can be leveraged at a breakpoint so that the same context is available but it's not required. Suppose that, instead, the user decides to simply hop into a TQ REPL to try out the different methods for getting from one token type to another.
 
 ```
-$ tq
-Welcome to Twenty Questions!
-tq > import OAuth
-tq > rt = RequestToken()
-tq > find rt -> AccessToken
-candidates:
-[1] request_access_token(get_pin(auth_url(rt)))
-[2] request_access_token(get_pin(auth_url(rt.token)))
+...
+tq > :find (rt, url) -> AccToken
+input                                 : (rt, url)
+=1==================================================
+[1] acc_token . pin . auth_url . fst  : AccToken "..."
+[2] acc_token . pin . auth_url . snd  : AccToken "..."
+[3] acc_token . pin . malintent . fst : AccToken "..."
 tq >
 ```
 
@@ -72,26 +73,25 @@ In the first version of OAuth the request token must be constructed with a reque
 Here, the trace information that Twenty Questions uses to produce interesting inputs can also be used to inform the user:
 
 ```
-candidates:
-[1] request_access_token(get_pin(auth_url(rt)))
-[2] request_access_token(get_pin(auth_url(rt.token)))
-tq > trace 1
-
 ...
-Uri()
-http.get
-oauth1.request_token
-oauth1.pin
-...
-
-tq > trace 2
-
-...
-oauth2.pin
-...
+tq > :trace
+input                                 : (rt, url)
+=1==================================================
+[1] acc_token . pin . auth_url . fst  : AccToken "..."
+    1 uri rt url
+    2 https_get "example.co/access_token..."
+    ...
+[2] acc_token . pin . auth_url . snd  : AccToken "..."
+    1 https_get "example.co/request_token..."
+    2 https_get "example.co/access_token..."
+    ...
+[3] acc_token . pin . malicious . fst : AccToken "..."
+    1 https_get "straight-stealin.shady.tv/..."
+    ...
+tq >
 ```
 
-Here the user views the trace of the method being invoked by the first procedure composition and then, after seeing that the procedures belong to the `oauth1` namespace, looks for the same in the second composition. The same trace used to provide interesting inputs for other functions has value as a differentiating feature itself.
+The user views the trace of the method being invoked by the first procedure composition and then, after seeing that the procedures make a different sequence of calls sees that he needs to consult his documentation further. The same trace used to provide interesting inputs for other functions has value as a differentiating feature itself.
 
 ## Footnotes
 
