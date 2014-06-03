@@ -1,11 +1,9 @@
-$ codehint app.hs
-stopped at 3:15 in app.hs:
-1    import Foo
-2
-3 => main = print (? [1,2])
+$ codehint app.java
+stopped at 1:9 in app.java:
+1 => int x = ?([1,2]);
 codehint > :find
 [1] sum     : 3
 [2] product : 2
 ...
-[10] head   : 1
+[50] head   : 1
 codehint >

@@ -3,10 +3,7 @@ codehint > :find
 [1] sum     : 3
 [2] product : 2
 ...
-[10] head   : 1
-codehint > :continue
-[1] sum     : IO "3"
-[2] product : IO "2"
+[50] head   : 1
+codehint > :step
 ...
-[10] head   : IO "1"
 codehint >

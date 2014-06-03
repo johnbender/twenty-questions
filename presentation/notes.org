@@ -41,7 +41,6 @@
 ** oauth
 *** input and output not helpful
 *** spec example is url input
-
 ** parser
 Parsers are tedious, complicated, and hard to get right.
 
@@ -129,7 +128,7 @@ print (Add (Num 1) (Add (Num 2) (Num 3))) == "1 2 3"
 Which parse tree is correct depends on the desired associativity of +.
 The system will ask a question to determine:
 
-parse "1 + 2 + 3" == 
+parse "1 + 2 + 3" ==
   (1) Add (Num 1) (Add (Num 2) (Num 3))
   (2) Add (Add (Num 1) (Num 2)) (Num 3)
 Select 1 or 2:
@@ -157,3 +156,8 @@ parse "1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)  (x16)
 parse "(0)"       == Num 0
 
 
+
+AED from MIT
+
+
+AED MIT

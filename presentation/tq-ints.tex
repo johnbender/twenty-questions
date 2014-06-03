@@ -1,16 +1,11 @@
 \begin{frame}{Twenty Questions}
-  \begin{block}{Refinement by Example}
-    Attempt to ask interesting questions about candidates
+  \begin{block}{A Better Approach}
 
     \begin{itemize}
-      \item spec can be many things, e.g. types, constraints
-      \item results ranked by ``interestingness''
-      \item refinement by questions
-      \item refinement by selection
-      \item refinement by spec
+      \item Why are there 50 candidates?
+      \item How are these candidates different?
+      \item Highlight the differences by example
     \end{itemize}
-
-    TODO diagram float bottom right
   \end{block}
 \end{frame}
 
@@ -36,24 +31,21 @@
 \end{frame}
 
 \begin{frame}{Twenty Questions}
-  TODO take this further and use traces to present ``interesting inputs''
-\end{frame}
-
-
-\begin{frame}{Twenty Questions}
-  \begin{block}{Noteworthy Details}
-    There are limitations here too
+  \begin{block}{How do we do this?}
+    There are still issues with this approach
 
     \begin{itemize}
-      \item exponentially small \textit{interesting} inputs
-      \item side effects mostly ignored
-      \item random inputs confusing at best
+      \item Finding examples
+        \begin{itemize}
+          \item Random
+          \item Systematic with trace
+        \end{itemize}
+      \item Describing the behaviors to the user
+        \begin{itemize}
+          \item Output
+          \item Trace
+          \item Side-effects
+        \end{itemize}
     \end{itemize}
   \end{block}
-\end{frame}
-
-\begin{frame}{Twenty Questions}
-  TODO should we walk through our thinking at this point? Discuss how we arrived at the conclusion that trace information is crucial for input generation and further expression candidate refinement
-
-  would make for a nice segue into the oauth example that uses traces directly
 \end{frame}

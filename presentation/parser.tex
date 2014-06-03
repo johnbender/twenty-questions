@@ -2,22 +2,6 @@
 \newcommand{\Q}{{\color{red}Q:}\hspace{2mm}}
 \newcommand{\A}{{\color{blue}A:}\hspace{2mm}}
 
-\begin{frame}[fragile]
-\frametitle{Synthesis by Twenty Questions}
-\begin{itemize}
-\item{So far Twenty Questions is all about discovery}
-\item{What about synthesis?}
-\item{Can help {\em refine} imprecise specifications}
-\end{itemize}
-
-\begin{block}{Synthesis Algorithm}
-\begin{enumerate}
-\item{Synthesize candidates for initial specification}
-\item{Use discovery algorithm to find desired candidate}
-\end{enumerate}
-\end{block}
-\end{frame}
-
 \begin{frame}{A parser in 22 questions}
   Define a parser for arithmetic expressions by example.
 
@@ -25,21 +9,20 @@
   t ::= \langle number \rangle ~|~ ( t ) ~|~ t + t ~|~ t - t ~|~ t * t ~|~ t / t
 \]
 
-  \begin{itemize}
-  \item{{\bf Goal:} avoid the usual problems with parsing:\\
-      associativity, precedence, left-recursion, detecting and
-      resolving ambiguity, etc}
-  \item{{\bf Idea:} use input/output examples as specification}
-
-  \item{{\bf Idea:} system detects what it needs to know how to parse,
-      and asks for examples}
+{\bf Goal:} avoid the usual problems with parsing:\\
+\begin{itemize}
+  \item{Associativity}
+  \item Precedence
+  \item Left-recursion
+  \item Ambiguity
+  \item $\dots$
 \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{First Steps}
 
-  Start by defining the Abstract Syntax Tree (mirrors the BNF):
+  Start by defining the Abstract Syntax type (mirrors the BNF):
 
 \begin{center}
 \begin{minipage}{.7\textwidth}
@@ -57,9 +40,9 @@ parseT = ???
 \end{center}
 
 \begin{itemize}
-\item{The type T defines the possible syntactic cases in our language,
-    used to determine whether a specification is complete.}
-\item{$parse$ is the parser we want to synthesize.}
+\item{The type T defines the possible cases}
+\item{Use to check if a specification is complete}
+\item{Want to synthesize $parseT$}
 \end{itemize}
 \end{frame}
 
@@ -115,15 +98,15 @@ The specification can be used to synthesize a {\em pretty-printer},
 which {\em must} be the right inverse of a parser:
 
 \begin{lstlisting}[mathescape, language=haskell]
-print :: T -> String
-$\forall$t:T. parse (print t) == t
+printT :: T -> String
+$\forall$t:T. parseT (printT t) == t
 \end{lstlisting}
 
 \begin{itemize}
-\item{\lsthaskell{print} must be one-to-one}
-\item{If \lsthaskell{print} maps two distinct ASTs to the same
+\item{\lsthaskell{printT} must be one-to-one}
+\item{If \lsthaskell{printT} maps two distinct ASTs to the same
     string, our specification is ambiguous}
-\item{Automatically detect ambiguities (e.g. systematic search)}
+\item{Automatically detect ambiguities}
 \item{Ask questions to resolve ambiguities}
 \end{itemize}
 \end{frame}
@@ -140,7 +123,7 @@ $\forall$t:T. parse (print t) == t
 \Q What is the parse of ``1+2*3''? \hspace{2mm} (A/B)
 
 \hspace{6mm}\begin{minipage}{.4\textwidth}
-{\bf Choice A:}\\
+{\bf Choice 1:}\\
 \begin{tikzpicture}
   \node(root) at (3,3){Mul};
   \node(l) at (2,2){Add};
@@ -156,7 +139,7 @@ $\forall$t:T. parse (print t) == t
 \end{minipage}
 \hspace{5mm}
 \begin{minipage}{.4\textwidth}
-{\bf Choice B:}\\
+{\bf Choice 2:}\\
 \begin{tikzpicture}
   \node(root) at (3,3){Add};
   \node(l) at (2,2){Num 1};
@@ -171,11 +154,11 @@ $\forall$t:T. parse (print t) == t
 \end{tikzpicture}
 \end{minipage}
 \\
-\A B
+\A 2
 \vspace{2mm}
 
 \begin{itemize}
-\item{Choice A flagged as an invalid AST (can't be printed)}
+\item{Choice 1 flagged as an invalid AST (can't be printed)}
 \item{Similar questions resolve all associativity and precedence
     ambiguities}
 \end{itemize}
@@ -195,12 +178,25 @@ parse "(0)" == Paren (Num 0)
 parse "1+2" == Add (Num 1) (Num 2)   (x4)
 
 -- associativity
-parse "1+2+3" == 
+parse "1+2+3" ==
   Add (Add (Num 1) (Num 2)) (Num 3)  (x4)
 
 -- precedence
-parse "1+2*3" == 
+parse "1+2*3" ==
   Add (Num 1) (Mul (Num 2) (Num 3))  (x12)
 \end{lstlisting}
+
+\end{frame}
+
+\begin{frame}{Takeaways}
+\begin{itemize}
+\item Synthesize parser and pretty printer simultaneously
+\item Bootstrap to cover all cases
+\item Detect and resolve ambiguities
+\item Use heuristics to simplify questions and extrapolate examples
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Questions?}
 
 \end{frame}

@@ -99,10 +99,10 @@
 %remove navigation symbols
 \setbeamertemplate{navigation symbols}{}
 
-\title{Spec by Example}
+\title{Twenty Questions}
 
 % A subtitle is optional and this may be deleted
-\subtitle{Interactive Specification Refinement}
+\subtitle{Specification by Example}
 
 \author{Matt Brown, John Bender}
 % - Give the names in the same order as the appear in the paper.
@@ -147,89 +147,50 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{Interactive Specification Refinement}
-  \begin{block}{Spec by Example by Example}
-    Writing specifications is hard, synthesis is inaccurate.
+\begin{frame}{Specification by Example}
+  \begin{block}{If you want the job done right ...}
+    ... lower expectations and have the user do it.
 
     \begin{enumerate}
-      \item define synthesis
-      \item existing work
-      \item areas for improvement
-      \item advanced synthesis
+      \item Background
+      \item Related work
+      \item Case studies:
+        \begin{itemize}
+          \item Input/output
+          \item OAuth
+          \item Parsing
+        \end{itemize}
     \end{enumerate}
   \end{block}
 \end{frame}
 
-\begin{frame}{Automatic Program Construction}
+\begin{frame}{Specs Are Hard, Let's Go Shopping}
   \begin{block}{Synthesis: Just build it for me!}
     \begin{itemize}
-    \item{Computer {\em derives} program that implements a
-        specification.}
-    \item{Requires {\em Generative} specifications.}
-    \item{``A red 4-wheeled gasoline-powered machine large enough for
-        a person to sit in comfortably, that is controlled using a
-        steering wheel and pedals, $\dots$''}
+      \item{Generate a program to satisfy spec}
+      \item{Possibly many candidates that work}
+      \item{How do we choose one?}
+        \begin{itemize}
+          \item{Heuristics}
+          \item{Refine spec}
+        \end{itemize}
     \end{itemize}
   \end{block}
-
-  \begin{block}{Discovery: Just find it for me!}
-    \begin{itemize}
-    \item{Computer {\em chooses} a program from a set of candidates.}
-    \item{Requires {\em discriminative} specifications.}
-    \item{``The red one''.}
-    \end{itemize}
-  \end{block}
-\end{frame}
-
-\begin{frame}{Specification by Example}
-\begin{block}{How can we discriminate between programs?}
-\begin{itemize}
-\item{By example: how they {\em behave} on particular inputs.}
-  \item{``defined on (0,0)'' can distinguish $\times$ from $\div$}
-  \item{``defined on (0,0)'' can't distinguish $\times$ from $+$}
-\end{itemize}
-\end{block}
-
-\begin{block}{Example examples}
-\begin{itemize}
-\item{Throws an exception on input \hspace{1mm}-1}
-\item{Returns 1 on input \hspace{1mm}-1}
-\item{Deletes file ``/tmp/foo'' on input ``foo''}
-\item{Loads ``Foo.class'' on input ``Foo''}
-\end{itemize}
-\end{block}
 \end{frame}
 
 \begin{frame}{Twenty Questions}
-  \begin{center}Help user provide useful examples.\end{center}
+  \begin{block}{Refining the Specification}
+    \begin{enumerate}
+      \item{Find inputs where candidates behave* differently}
+      \item{User chooses desired behavior}
+      \item{Repeat until only one candidate remains}
+    \end{enumerate}
 
-  \begin{block}{What makes an example useful?}
-  \begin{itemize}
-  \item{Distinguishes some candidates from others}
-  \item{Some (but not all) candidates exhibit example behavior}
-  \item{Usefulness relative to the set of candidates!}
-  \end{itemize}
-  \end{block}
-
-  \begin{block}{Discovery Algorithm}
-  \begin{enumerate}
-  \item{Search for inputs on which candidates behave differently.}
-  \item{Ask user to choose desired behavior for a particular input.}
-  \item{Rinse and repeat until only one candidate remains.}
-  \end{enumerate}
+    *many types of behavior
   \end{block}
 \end{frame}
 
-\begin{frame}{Automatic Program Construction}
-  \begin{block}{Synthesizzle or Synthesnooze}
-    Synthesis is very cool, but currently limited
-
-    \begin{itemize}
-      \item automatic selection inaccurate
-      \item manual selection tedious
-      \item only works for small domains
-    \end{itemize}
-  \end{block}
+\begin{frame}{Any Questions?}
 \end{frame}
 
 \input{jungloid}
@@ -237,6 +198,9 @@
 \input{codehint}
 
 \input{tq-ints}
+
+\begin{frame}{Any Questions?}
+\end{frame}
 
 \input{oauth}
 

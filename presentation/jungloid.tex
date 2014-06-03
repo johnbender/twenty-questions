@@ -1,21 +1,19 @@
 \begin{frame}{Jungloid}
   \begin{block}{Bienvenido al Jungloid}
-    Initial type based synthesis work out of Berkley
+    Type based synthesis for Java expressions
 
     \begin{itemize}
-      \item ``spec'', e.g. $(FactoryFactory, BeanFactory)$ *
-      \item results ranked by $|$expressions$|$
+      \item ``spec'', e.g. $FactoryFactory \rightarrow BeanFactory$
+      \item results ranked by size
       \item no tools for refinement
-      \item simple (boring?) test cases
+      \item simple test cases, e.g. $Map \rightarrow Iterator$
     \end{itemize}
-
-    TODO diagram float bottom right
   \end{block}
 \end{frame}
 
 \begin{frame}{Jungloid}
   \begin{block}{From Integers to an Integer}
-    No help past candidate generation and ranking.
+    No help past candidate generation and ranking
 
     \begin{example}
       \lstinputlisting[language=bash]{examples/jungloid}
