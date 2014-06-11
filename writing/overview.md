@@ -1,6 +1,6 @@
 # Twenty Questions, Spec by Example
 
-Twenty Questions is an attempt refining a program specification by asking of the user questions that are relevant using the context and synthesized candidates. Here we illustrate the basic ideas and existing work in the area by way of a simple example.
+Twenty Questions is an attempt at refining a program specification by asking of the user questions that are relevant using the context and synthesized candidates. Here we illustrate the basic ideas and existing work in the area by way of a simple example.
 
 ## A Simple Example
 
@@ -24,7 +24,7 @@ jungloid >
 
 The type pair being fed to Jungloid is `([Int], Int)` and it produces a list of some fifty expressions that satisfy this type pair ranked by the "size" of the expression. Note, that here the size of the visible expressions is essentially one because they each involve one function but that normally wouldn't be the case. Further, note that the dealing in types here is only for the purpose of establishing an example the reader may have existing intuition for and specifications can range over many different attributes of candidate expressions as we will see.
 
-Clearly, in situations where Jungloid can't provide a small number of candidate expressions the user is left out in the cold.
+Clearly, when Jungloid can't provide a small number of candidate expressions the user is left out in the cold.
 
 ## CodeHint
 
@@ -79,7 +79,7 @@ product : 1         | head    : error
 ...                     ...
 1 or 2
 tq >
-``
+```
 
 For this specification Twenty Questions has generated an input that produces "interesting" behavior, which we loosely define as "best differentiating" behavior, and presented the use with a choice between the two groups.
 
