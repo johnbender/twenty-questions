@@ -1,75 +1,115 @@
-# Twenty Questions
+# Twenty Questions, Spec by Example
 
-Twenty Questions is designed to be an interactive program construction and exploration tool. It takes little or no specification input and works with the user to find the program they have in mind through questions, specification refinements, and access to auxiliary information about program components.
+Twenty Questions is an attempt refining a program specification by asking of the user questions that are relevant using the context and synthesized candidates. Here we illustrate the basic ideas and existing work in the area by way of a simple example.
 
-## Approach
+## A Simple Example
 
-Here we provide a short overview of the various functions and capabilities for reference while reading through the example use cases. First lets take a look at how a user with a specification in mind might begin the search for satisfying expressions.
+The idea behind synthesis is that the programmer should arrive with a notion of program behavior that exists at a higher level of abstraction than the language she might otherwise be working in. From that specification the program can be constructed automatically instead of written. One of the primary issues with this approach is that the specification is rarely sufficient to arrive at a single candidate at which point the programmer is left to differentiate between the synthesized candidates.
+
+Here we consider a simple example where the programmer wants to build a program that takes a list of integers and results in a single integer. Generally, she might have a notion of how all these integers are going to be combined but maybe she isn't quite sure what the outcome should be or she simply doesn't know the name of the relevant functions in the programming context.
+
+## Jungloid
+
+With the stage set we turn to Jungloid which attempts to solve this problem for pairs of types (input and output) in the Java programming language. Here and in later examples we have constructed fake command line sessions that illustrate the basic ideas behind each approach the problem of candidate selection and specification refinement.
+
+```
+$ jungloid
+jungloid > :find [Int] -> Int
+[1] sum
+[2] product
+...
+[50] head
+jungloid >
+```
+
+The type pair being fed to Jungloid is `([Int], Int)` and it produces a list of some fifty expressions that satisfy this type pair ranked by the "size" of the expression. Note, that here the size of the visible expressions is essentially one because they each involve one function but that normally wouldn't be the case. Further, note that the dealing in types here is only for the purpose of establishing an example the reader may have existing intuition for and specifications can range over many different attributes of candidate expressions as we will see.
+
+Clearly, in situations where Jungloid can't provide a small number of candidate expressions the user is left out in the cold.
+
+## CodeHint
+
+The CodeHint project is a continuation of the work started in Jungloid and changes both the means by which the user "defines" a specification and adds some initial tools for refining the candidates.
+
+```
+$ codehint app.java
+stopped at 1:9 in app.java:
+1 => int x = ?([1,2]);
+codehint > :find
+[1] sum     : 3
+[2] product : 2
+...
+[50] head   : 1
+codehint >
+```
+
+Instead of entering a specification directly the user provides a breakpoint and an expression at which the debugger stops to find candidates for. The breakpoint provides valuable context since now anything that's in scope (variables, libraries, methods, state, etc) can be used to generate candidates.
+
+```
+...
+codehint > :find
+[1] sum     : 3
+[2] product : 2
+...
+[50] head   : 1
+codehint > :step                #1
+...
+codehint > :spec ?([1,2]) > 1   #2
+[1] sum     : 3
+[2] product : 2
+...
+codehint >
+```
+
+Additionally, CodeHint provides two ways to further differentiate between candidates (or in other words refine the specification). First it allows the user to continue execution past the breakpoint with each of the candidate expressions to see what happens (#1). Second allows the user to manually filter the expressions based on their final evaluated form (#2).
+
+This gives the user a better chance of synthesizing a useful candidate but it has a few important drawbacks. First, the debugging context can be seen as a very specific and possibly restrictive input for the candidate generation. For example, if the user is aware of some possibly interesting bit of information that is outside the scope of the breakpoint there's no way to make use of it. Second, it's virtually impossible to account for the side-effects of candidate expressions in either the spec or the continued execution. Finally, the specification refinement is manual and often requires intimate knowledge of the information that's available as a result.
+
+## Twenty Questions
+
+Twenty Questions is an attempt to address some of the shortcomings of these approaches to synthesis by generating a specification with help of the user and by providing more information about candidates where possible.
 
 ```
 $ tq
-Welcome to Twenty Questions!
-tq > find [Int] -> Int
-[1] sum
-[2] product
-...
-[10] head
-tq >`
-```
+tq > :find [Int] -> Int
+intput  : []
+output  : ok        | output  : error
+==1=================+==2==================
+sum     : 0         | head    : error
+product : 1         | head    : error
+...                     ...
+1 or 2
+tq >
+``
 
-The `find` command adds a constraint to the current specification and then rebuilds the, currently empty, list of satisfying expressions. The specification need not be limited to types but can constrain over each of the dimensions measured by Twenty Questions: inputs, outputs, traces, and types. This particular specification provides a fairly large set of candidates so the next thing to do is likely to differentiate those candidates.
-
-```
-...
-[1] sum
-[2] product
-...
-[10] head
-tq > input []
-[1] sum     : 0
-[2] product : 1
-...
-[10] head   : error
-```
-
-With the user specified input of an empty list Twenty Questions provides the outputs for each of the candidate expressions. The `group` option can be added to organize the results and also weed out candidates by generating constraints to be added to the current set. Additionally, if the user is unsure of which will provide interesting outputs for the candidate functions they can also use the `auto` command and Twenty Questions will select randomized but relevant inputs based on information about the candidate expressions. Consider a simple parser:
+For this specification Twenty Questions has generated an input that produces "interesting" behavior, which we loosely define as "best differentiating" behavior, and presented the use with a choice between the two groups.
 
 ```
-tq > find String -> AST
-[1] foo
-[2] bar
 ...
-[10] baz
-tq > auto group
-input : "foo"
-[1] foo : Just FooExpr        [2] bar : Nothing
-...                           ...
-                              [10] baz : Nothing
+output  : OK  | output   : error
+=1==============2=======================
+sum           | head
+product       | foo
+...
+tq > 1
+input   : [1,1]
+output  : 2   | output   : 1
+=1==============2=======================
+sum           | product
+length        |
+...
+tq >
 ```
 
-In many cases random inputs and the corresponding outputs are not sufficient to differentiate between candidates. A random string as input to any one of these parsers would almost always result in a `Nothing` result. Here, Twenty Questions uses trace information from the candidate functions to see that there are an exponentially small number of interesting inputs and chooses one that partitions the results.
+Selecting one option or the other can be seen as adding the specification and thereby refining the set of candidates. Here the additional specification in pseudo-code might be `f [] -> Ok` to say that the user expects the function to deal with an empty list gracefully. With that addition in place, a new input is generated that splits the list up once again.
 
-## Additional Features
+The key takeaway is that the questions can be generated automatically and each answer is an example of the user expects the function to behave that can be added to the specification until a single viable candidate is reached.
 
-* The built in REPL allows for manual expression construction, evaluation, and addition to a working set of candidate expressions [1].
+The challenge then is to extend this notion of "interesting questions" beyond simple inputs and outputs. As we'll see they are often insufficient to differentiate meaningfully between candidates.
 
-* The specification set can be altered by addition of specifications through types, constraints on outputs, constraints on trace information, and property tests.
-
-
-* The traces associated with each candidate can be viewed in isolation and also searched using regular expressions.
-
-* Being a REPL Twenty Questions can also be used at any debugging breakpoint to leverage the debugging context for specifications and inputs.
-
-* Candidate generation includes compound expressions with a few simply combinators depending on the language context.
-
-## Examples
+## Further Reading
 
 The following examples are included to give a more comprehensive overview of how and when Twenty Questions might be used by a developer:
 
-* [OAuth and Codehint](./oauth.md) - Documentation replacement.
+* [OAuth and Codehint](./oauth.md) - When inputs and outputs fail.
 * [Parser](./parser.md) - Complex program synthesis.
 * [Key/Value Store](./key-value-store.md) - Data structure differentiation.
-
-## Footnotes
-
-1. In fact it's reasonable to consider Twenty Questions as an augmented REPL and this makes intuitive sense given that the goal is exploration.
