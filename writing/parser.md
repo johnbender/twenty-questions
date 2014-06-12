@@ -92,14 +92,19 @@ constraint:
 parse (print e) == e
 ```
 
-To demonstrate the problem, note that `print` is not one-to-one. For
+By requiring `parse` to be the left-inverse of `print`, we can easily check whether our 
+constraints specify an unambiguous parser: if `print` is left-invertible, then we 
+can synthesize an unambiguous `parse` function. Unfortunately, our specification
+of `print` is not left-invertible, because it is not one-to-one. For
 example, `print (Mul (Add (Num 1) (Num 2)) (Num 3))` and `print (Add
-(Num 1) (Mul (Num 2) (Num 3)))` both produce the string `"1+2*3"`. How
-should our parser parse the string `"1+2*3"`? At this point, our
-specification is ambiguous. We can automatically detect these kinds of
+(Num 1) (Mul (Num 2) (Num 3)))` both produce the string `"1+2*3"`. Our parser
+can only return one AST for this string, so our constraint `parse (print e) == e` must
+fail for at least one of these ASTs.  Therefore there is no way to define `parse`
+to be an inverse of `print` as specified by our current constraints. 
+We can automatically detect these kinds of
 ambiguities by searching for two ASTs that are printed to the same
-value. We can then resolve the ambiguity by asking the user to choose
-which of the two ASTs should be returned by the parser for that input.
+value, and resolve each ambiguity by asking the user to choose
+which of the two ASTs should be returned by the parser for that input:
 
 <span style="color:red">Q:</span> What is `parse "1+2*3"`? [1/2]
 
@@ -108,12 +113,10 @@ which of the two ASTs should be returned by the parser for that input.
 <span style="color:blue">A:</span> 2
 
 Here the user chooses the second option, since `*` should have higher
-precedence than `+`. This refines the specification of parse, but we
-still have the problem that print is not one-to-one, since there are
-two different ASTs that print to `"1+2*3"`. We can address this by
-removing `(Mul (Add (Num 1) (Num 2)) (Num 3))` from the domain of
-print. We can achieve this by adding a precondition that the input AST
-satisfy a validity check:
+precedence than `+`. Now that we have desired output of parse, we
+need to modify print so that only one AST is printed as `"1+2*3"`.
+We do this by removing`(Mul (Add (Num 1) (Num 2)) (Num 3))` from the domain of
+print, by adding a precondition that the input AST satisfy a validity check:
 
 ```haskell
 valid (Mul (Add _ _) _) = False
