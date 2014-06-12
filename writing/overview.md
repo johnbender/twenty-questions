@@ -112,4 +112,3 @@ The following examples are included to give a more comprehensive overview of how
 
 * [OAuth and Codehint](./oauth.md) - When inputs and outputs fail.
 * [Parser](./parser.md) - Complex program synthesis.
-* [Key/Value Store](./key-value-store.md) - Data structure differentiation.
