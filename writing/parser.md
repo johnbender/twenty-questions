@@ -35,6 +35,7 @@ component. We can use a heuristic in this case, and assume the user
 may want to use a standard parser for integers.
 
 <span style="color:red">Q:</span> Is `print (Num 123) == "123"`? (Y/n)
+
 <span style="color:blue">A:</span> Y
 
 Here, twenty questions asks a simple question to check if the printer
@@ -43,6 +44,7 @@ required to completely specify the printer. If we assume that the user
 is familiar with regular expressions, we could simply ask:
 
 <span style="color:red">Q:</span> Does `print s` match `/-?[1-9][0-9]*/`? (Y/n/?)
+
 <span style="color:blue">A:</span> ?
 
 In this case, the user answers '?' to indicate they don't understand
@@ -53,6 +55,7 @@ Once we have a specification for printing Num nodes, we can collect
 examples for parsing each internal node.
 
 <span style="color:red">Q:</span> `print (Add (Num 0) (Num 1)) == ?`
+
 <span style="color:blue">A:</span> `"0+1"`
 
 Since we already have learned that `print (Num 0) == "0"` and `print
