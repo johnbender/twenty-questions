@@ -1,50 +1,14 @@
 # Twenty Questions and Spec by Example
 
-In API discovery, we want to find something that satisfies our needs,
-which can be expressed as some kind of specification.  A specification
-in this setting is used in a fundamentally different way than for
-verification, synthesis, etc.  Traditional specifications can be used
-to emulate the object they are describing, as in Hesam's work on
-declarative mocking.  These specifications are very powerful, and can
-be unwieldy: they require a lot of effort from the programmer to
-produce, and checking if a piece of code satisfies a specification is
-expensive.  For these reasons, traditional specifications may not be
-appropriate for API discovery.
+In API discovery, we want to find something that satisfies our needs, which can be expressed as a kind of specification. Traditional specifications can be used to emulate the object they are describing, as in Hesam's work on declarative mocking.  These specifications are very powerful but they can be unwieldy, require a lot of effort from the programmer and so may not be appropriate for API discovery.
 
-What do we need for API discovery?  We need enough information to
-select a piece of code from a set of possibilities.  The specification
-serves as communication to the system which choice we want.  If there
-is only one choice, no specification is needed at all!  The system
-simply hands it to us without asking.  If there are a finite number of
-choices, we can adopt some naming scheme, and simply give the name (or
-a set of names if there are multiple acceptable choices).  There is no
-need to supply a complete specification.  Once naming is no longer
-practical, we can specify constraints as input/output pairs or unit
-tests as in Alex's demo.  Still, we don't need a complete
-specification -- only need enough to make a choice.
+Then what do we need for API discovery?  We need enough information to select a piece of code from a set of possibilities.  The specification serves as communication to the system which choice we want.  If there is only one choice, no specification is needed at all! If there are a finite number of choices, we can adopt some naming scheme, and simply give the name (or a set of names if there are multiple acceptable choices). Once naming is no longer practical, we can specify constraints as input/output pairs or unit tests as in Alex's demo.  Still, we don't need a complete specification -- only need enough to make a choice.
 
-In machine learning parlance, specifications for verification or
-synthesis must be generative, whereas specs for discovery can be
-discriminative.  As in ML modeling, a discriminative specification
-can be must simpler than a generative one.  Complexity (in terms of
-size) of generative specifications grow with the complexity of the
-desired functionality.  Complexity of discriminative specs grow with
-the number of differentiable candidates.
+What do we do when there are many possible candidates for a given specification?  It isn't reasonable to require the programmer to give a more precise specification. Instead, the system should be able automatically discover input/output pairs that differentiate the available options, and present choices to the user. This can be an
+interactive and iterative process, along the lines of twenty questions.  Each decision made by the user leads to a more refined
+specification.
 
-What do we do if there are many possible candidates for a given
-specification?  It is not reasonable to require the programmer to give
-a more precise specification: doing so requires knowledge of the
-available options, and does not scale with respect to the number of
-available candidate APIs! Instead, the system should be able
-automatically discover input/output pairs that differentiate the
-available options, and present choices to the user: "do you want
-something that works like this, or like that?"  This can be an
-interactive and iterative process, along the lines of twenty
-questions.  Each decision made by the user leads to a more refined
-specification.  Thus, the system can be interpreted as helping the
-user build effective discriminative specifications.
-
-Our idea is use automated testing to (attempt to) find small
+Our idea is to use automated testing to (attempt to) find small
 input/output pairs that partitions the set of candidates into
 (ideally) a small number of roughly equal-sized subsets.  Hopefully,
 this will allow the user to easily recognize and indicate the desired
@@ -52,19 +16,7 @@ behavior.  In many cases it should be easier for the user to recognize
 desired behaviors for particular inputs than to communicate a
 specification for large sets of inputs.
 
-In the spirit of Magic Ink, we can take the user's context into
-account in order to reduce the amount of interaction required.  For
-example, if the user is looking to fill a hole in a particular
-function, we can restrict the search space to candidates that seem to
-work (e.g. by checking that automatic tests don't crash) in that context.
-
-Twenty Questions is an attempt at refining a program specification by asking of the user questions that are relevant using the context and synthesized candidates. Here we illustrate the basic ideas and existing work in the area by way of a simple example.
-
-## A Simple Example
-
-The idea behind synthesis is that the programmer should arrive with a notion of program behavior that exists at a higher level of abstraction than the language she might otherwise be working in. From that specification the program can be constructed automatically instead of written. One of the primary issues with this approach is that the specification is rarely sufficient to arrive at a single candidate at which point the programmer is left to differentiate between the synthesized candidates.
-
-Here we consider a simple example where the programmer wants to build a program that takes a list of integers and results in a single integer. Generally, she might have a notion of how all these integers are going to be combined but maybe she isn't quite sure what the outcome should be or she simply doesn't know the name of the relevant functions in the programming context.
+Initially we consider a simple example where the programmer wants to build a program that takes a list of integers and produces a single integer. Generally, she might have a notion of how all these integers are going to be combined but maybe she isn't quite sure what the outcome should be or she simply doesn't know the name of the relevant functions in the programming context.
 
 ## Jungloid
 
