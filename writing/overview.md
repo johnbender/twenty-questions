@@ -8,15 +8,10 @@ What do we do when there are many possible candidates for a given specification?
 interactive and iterative process, along the lines of twenty questions.  Each decision made by the user leads to a more refined
 specification.
 
-Our idea is to use automated testing to (attempt to) find small
-input/output pairs that partitions the set of candidates into
-(ideally) a small number of roughly equal-sized subsets.  Hopefully,
-this will allow the user to easily recognize and indicate the desired
-behavior.  In many cases it should be easier for the user to recognize
-desired behaviors for particular inputs than to communicate a
-specification for large sets of inputs.
+The idea behind twenty questions is to use automated testing to find small
+input/output pairs that partitions the set of candidates into (ideally) a small number of roughly equal-sized subsets.  Hopefully, this will allow the user to easily recognize and indicate the desired behavior because it should be easier for the user to recognize desired behaviors for particular inputs than to communicate a specification for large sets of inputs.
 
-Initially we consider a simple example where the programmer wants to build a program that takes a list of integers and produces a single integer. Generally, she might have a notion of how all these integers are going to be combined but maybe she isn't quite sure what the outcome should be or she simply doesn't know the name of the relevant functions in the programming context.
+For the purposes of illustration we initially consider a simple example where the programmer wants to build a program that takes a list of integers and produces a single integer. Generally, she might have a notion of how all these integers are going to be combined but maybe she isn't quite sure what the outcome should be or she simply doesn't know the name of the relevant functions in the programming context.
 
 ## Jungloid
 
