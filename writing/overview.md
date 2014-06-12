@@ -100,7 +100,7 @@ length        |
 tq >
 ```
 
-Selecting one option or the other can be seen as adding the specification and thereby refining the set of candidates. Here the additional specification in pseudo-code might be `f [] -> Ok` to say that the user expects the function to deal with an empty list gracefully. With that addition in place, a new input is generated that splits the list up once again.
+Selecting one option or the other can be seen as adding to the specification and thereby refining the set of candidates. Here the additional specification in pseudo-code might be `f [] -> Ok` to say that the user expects the function to deal with an empty list gracefully. With that addition in place, a new input is generated that splits the list up once again.
 
 The key takeaway is that the questions can be generated automatically and each answer is an example of the user expects the function to behave that can be added to the specification until a single viable candidate is reached.
 

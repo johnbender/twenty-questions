@@ -30,7 +30,7 @@ The ideal output of a tool meant to stand in for documentation in this example, 
 
 <iframe width="420" height="315" src="https://www.youtube.com/embed/qn5yIEe9kks#t=231" frameborder="0" allowfullscreen></iframe>
 
-In the CodeHint demo above, the approach is centered around runtime types and so the mapping to our example might be that the user has some a URL and request token in scope and desires to have an instance of an access token. At a debugger breakpoint CodeHint will search for methods in scope [1] that can be composed with data that is in scope at the breakpoint to satisfy an assignment to a variable of a given type. Under the assumption that a set of appropriate methods exist for this purpose, it's not hard to image that it would be able to find them and compose them to match the output type the user needs. For example:
+In the CodeHint demo above, the approach is centered around runtime types and so the mapping to our example might be that the user has some a URL and request token in scope and desires to have an instance of an access token. At a debugger breakpoint CodeHint will search for methods in scope that can be composed with data that is in scope at the breakpoint to satisfy an assignment to a variable of a given type. Under the assumption that a set of appropriate methods exist for this purpose, it's not hard to image that it would be able to find them and compose them to match the output type the user needs. For example:
 
 ```
 tq > :find (rt, url) -> AccToken
@@ -47,7 +47,7 @@ First, a debugging context is assumed/required. That is the tool requires a larg
 
 Second, filtering a large list of candidates requires continued execution (which is not always an option) **or** some important foreknowledge of the desired output (e.g. "Eve" in the final demo of the video). To continue with the final example of the demo, if the user has some vague notion that they want data at the leaf of a tree but they don't have perfect knowledge of the shape or content of that data, then filtering in the manner prescribed will be difficult.
 
-Finally, the flows for the first and second versions of OAuth are not the same, as the second version can jump strait to forwarding the user to the authorization url without having to gather a request token. Given two nearly identical inputs and outputs (tokens) it's not clear how the developer would decide or even differentiate between the two candidate expressions using either of the CodeHint approaches.
+Finally and most importantly, the flows for the versions of OAuth are not the same and there's something fishy about the last entry in spite of it matching requirements. Given two nearly identical inputs and outputs (tokens) it's not clear how the developer would decide or even differentiate between the two candidate expressions using either of the CodeHint approaches.
 
 ## Twenty Questions
 
@@ -66,9 +66,7 @@ input                                 : (rt, url)
 tq >
 ```
 
-There are few things to note here. The `find` primitive begins the search for a new candidate in the current context and takes as an argument some specification. In this case the specification happens to be a type since that accurately captures the goals of the user. Also, in the specification an object in scope is used for its type and then is also considered as a candidate argument for the procedure compositions that fit the specification.
-
-In the first version of OAuth the request token must be constructed with a request to the authorization server but in the second version the request token can be issued once by the authorization server (here denoted by accessing the `token` property of `RequestToken` object). Otherwise the flows are the same and to an uninformed user it's clearly difficult to differentiate between the 2 options. The CodeHint approach to differentiation won't work here since the outputs are basically identical.
+Again, the flows are the same and to an uninformed user it's clearly difficult to differentiate between the options. The CodeHint approach to differentiation won't work here since the outputs are basically identical and everything important that marks these expressions as different has to do with effects.
 
 Here, the trace information that Twenty Questions uses to produce interesting inputs can also be used to inform the user:
 
@@ -92,7 +90,3 @@ tq >
 ```
 
 The user views the trace of the method being invoked by the first procedure composition and then, after seeing that the procedures make a different sequence of calls sees that he needs to consult his documentation further. The same trace used to provide interesting inputs for other functions has value as a differentiating feature itself.
-
-## Footnotes
-
-1. It's not clear exactly what the scope is, we assume it's the classpath.
