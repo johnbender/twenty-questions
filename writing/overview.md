@@ -1,4 +1,4 @@
-# Twenty Questions, Spec by Example
+# Twenty Questions and Spec by Example
 
 Twenty Questions is an attempt at refining a program specification by asking of the user questions that are relevant using the context and synthesized candidates. Here we illustrate the basic ideas and existing work in the area by way of a simple example.
 
@@ -111,4 +111,4 @@ The challenge then is to extend this notion of "interesting questions" beyond si
 The following examples are included to give a more comprehensive overview of how and when Twenty Questions might be used by a developer:
 
 * [OAuth and Codehint](./oauth.md) - When inputs and outputs fail.
-* [Parser](./parser.md) - Complex program synthesis.
+* [Parsing by Example](./parser.md) - Synthesizing an parser by twenty questions.
