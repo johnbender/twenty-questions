@@ -130,6 +130,20 @@ parses s = [p | i <- findOccs isOp s
               , valid p
               , pr p == s]
 
+data Token = TAdd | TSub | TMul | TDiv | TInt Int | TLParen | TRParen
+tokens = reverse . tokens' []
+tokens' l (' ':s) = tokens' l s
+tokens' l ('+':s) = tokens' (TAdd:l) s
+tokens' l ('-':s) = tokens' (TSub:l) s
+tokens' l ('*':s) = tokens' (TMul:l) s
+tokens' l ('/':s) = tokens' (TDiv:l) s
+tokens' l ('(':s) = tokens' (TLParen:l) s
+tokens' l (')':s) = tokens' (TRParen:l) s
+tokens' l s = let nstr = takeWhile isDigit s
+                  n = read n
+              in tokens' (TInt n:l) (dropWhile isDigit s)
+
+
 op "+" = Add
 op "-" = Sub
 op "*" = Mul

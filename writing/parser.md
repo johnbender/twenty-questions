@@ -1,189 +1,208 @@
-In this example, we will use twenty questions to synthesize a parser
-for a basic arithmetic calculator. We start by defining our AST
-representation, which will be the output type for our parser. For
-clarity we will use a haskell syntax:
+In this section, we will explore how we might use twenty questions to
+synthesize an unambiguous parser for a simple arithmetic
+calculator. Our approach is to use input/output examples to define a
+one-to-one pretty printer. We can then synthesize an unambiguous
+parser by inverting the parser.
+
+We demonstrate the idea in Haskell, though the ideas are applicable to
+other languages. We begin by defining an Abstract Syntax Tree, which
+is the desired output of our parser. Then we learn a pretty printer
+for the AST by playing twenty questions. There are two phases: first,
+we collect small examples for each case in our syntax tree, starting
+from the leaves. Next, we search for ambiguities and ask for examples
+to resolve them.
+
+Our language of expressions consists of integers, parenthesized
+expressions, and binary addition, subtraction, multiplication, and
+division operations. The explicit case for parentheses may at first
+seem redundant. We'll see later that they are useful
+simplification. Our abstract syntax data type is defined as:
 
 ```haskell
 data AST =
     Num Int
+  | Paren AST
   | Add AST AST
   | Sub AST AST
   | Mul AST AST
   | Div AST AST
 ```
 
-We define an initial specification by input/output pairs:
+We begin by "bootstrapping" our printer and parser by collecting a
+small example for printing each case in our AST type. The first case
+`Num` is special: it is a leaf node containing a single Int
+component. We can use a heuristic in this case, and assume the user
+may want to use a standard parser for integers.
 
-```haskell
+<span style="color:red">Q:</span> Is `print (Num 123) == "123"`? (Y/n)
+<span style="color:blue">A:</span> Y
 
-parse      :: String -> AST
+Here, twenty questions asks a simple question to check if the printer
+should print Num nodes as integers. A few more examples may be
+required to completely specify the printer. If we assume that the user
+is familiar with regular expressions, we could simply ask:
 
--- specification by example:
-([1-9][0-9]*)   == Num \1
+<span style="color:red">Q:</span> Does `print s` match `/-?[1-9][0-9]*/`? (Y/n/?)
+<span style="color:blue">A:</span> ?
+
+In this case, the user answers '?' to indicate they don't understand
+the regular expression. In this case, twenty questions can revert back
+to the simpler example-based questions.
+
+Once we have a specification for printing Num nodes, we can collect
+examples for parsing each internal node.
+
+<span style="color:red">Q:</span> `print (Add (Num 0) (Num 1)) == ?`
+<span style="color:blue">A:</span> `"0+1"`
+
+Since we already have learned that `print (Num 0) == "0"` and `print
+(Num 1) == "1"`, we can automatically generalize the example to the
+constraint:
+
+``` haskell
+print (Add e1 e2) == print e1 ++ "+" ++ print e2
 ```
 
-This defines how to parse numbers, using a regular expression.  For
-remaining expressions, we add constraining examples in terms of
-numbers:
+After repeating this process for Sub, Mul, and Div nodes, we will add
+the following constraints to our specification:
 
 ```haskell
-"1 + 2"         == Add (Num 1) (Num 2)
-"1 - 2"         == Sub (Num 1) (Num 2)
-"1 * 2"         == Mul (Num 1) (Num 2)
-"1 / 2"         == Div (Num 1) (Num 2)
+print (Paren e)   == "(" ++ print e ++ ")"
+print (Add e1 e2) == print e1 ++ "+" ++ print e2
+print (Sub e1 e2) == print e1 ++ "-" ++ print e2
+print (Mul e1 e2) == print e1 ++ "*" ++ print e2
+print (Div e1 e2) == print e1 ++ "/" ++ print e2
 ```
 
-This specification is ambiguous.  Key issues are precedence, and
-associativity. Furthermore, the desired parser is most naturally
-expressed using left recursion, which can complicate implementation.
-There are standard techniques for dealing with each of these issues.
-However, with the help of twenty questions, we can abstract away these
-techniques.  The system asks questions about the desired behavior, and
-implements it using the standard techniques. For example, to establish
-the associativity of addition, we can ask the use to choose between
-two examples.
+These constraints are sufficient to produce a pretty printer for our
+language. However, they do not specify an unambiguous parser. We want
+our parser to be the inverse of a printer. That is, we have the
+constraint:
 
 ```haskell
-"1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)
-"1 + 2 + 3" == Add (Num 1) (Add (Num 2) (Num 3))
-
-      Add
-     /   \
-    /     \
-(Num 1)   Add
-         /   \
-	    /     \
-    (Num 2)  (Num 3)
-
-             Add
-		    /   \
-		   /     \
-	     Add    (Num 3)
-	    /   \
-	   /     \
-   (Num 1)  (Num 2)
+parse (print e) == e
 ```
 
-We can indicate that addition should be left associative by choosing
-the second option.  This would result in adding the following example
-to be added to the specification:
+To demonstrate the problem, note that `print` is not one-to-one. For
+example, `print (Mul (Add (Num 1) (Num 2)) (Num 3))` and `print (Add
+(Num 1) (Mul (Num 2) (Num 3)))` both produce the string `"1+2*3"`. How
+should our parser parse the string `"1+2*3"`? At this point, our
+specification is ambiguous. We can automatically detect these kinds of
+ambiguities by searching for two ASTs that are printed to the same
+value. We can then resolve the ambiguity by asking the user to choose
+which of the two ASTs should be returned by the parser for that input.
+
+<span style="color:red">Q:</span> What is `parse "1+2*3"`? [1/2]
+![Resolving ambiguity](images/parser-ambiguous-choices.png)
+
+<span style="color:blue">A:</span> 2
+
+Here the user chooses the second option, since `*` should have higher
+precedence than `+`. This refines the specification of parse, but we
+still have the problem that print is not one-to-one, since there are
+two different ASTs that print to `"1+2*3"`. We can address this by
+removing `(Mul (Add (Num 1) (Num 2)) (Num 3))` from the domain of
+print. We can achieve this by adding a precondition that the input AST
+satisfy a validity check:
 
 ```haskell
-"1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)
+valid (Mul (Add _ _) _) = False
 ```
 
-Suppose we now want to specify that all operators should be
-left-associative, without having to answer questions for each.  We
-could do this via a regex and wildcards:
+Here, we have generalized the example `(Mul (Add (Num 1) (Num 2)) (Num
+3))` to reject any AST where `Add` is an immediate left child of
+`Mul`.  This is invalid, since `Mul` should have higher
+precedence. With a few more examples, we can establish all the
+associativity and precedence rules for our language. The complete
+definition of `valid` is then:
 
 ```haskell
-"1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
+-- establish associativity
+valid (Add _ (Add _ _)) = False
+valid (Sub _ (Sub _ _)) = False
+valid (Mul _ (Mul _ _)) = False
+valid (Div _ (Div _ _)) = False
+
+-- establish precedence
+valid (Add _ (Sub _ _)) = False
+valid (Sub _ (Add _ _)) = False
+
+valid (Mul (Add _ _) _) = False
+valid (Mul (Sub _ _) _) = False
+valid (Mul _ (Add _ _)) = False
+valid (Mul _ (Sub _ _)) = False
+valid (Mul _ (Div _ _)) = False
+
+valid (Div (Add _ _) _) = False
+valid (Div (Sub _ _) _) = False
+valid (Div _ (Add _ _)) = False
+valid (Div _ (Sub _ _)) = False
+valid (Div _ (Mul _ _)) = False
+
+valid _ = True
 ```
 
-This constraint says that inputs matching the regular expression
-should match the pattern on the right hand side.  Here the symbols
-`<1>` and `<2>` represent variables in the constraint language, whose
-values are to be determined by the corresponding group in the regex.
-This single constraint can be expanded into 16 simpler constraints:
+Note that a full validity check would be recursive. We omit the
+details for clarity. Note also that we can use `Paren` nodes to
+override the precedence and associativity rules imposed by the
+`valid`.
+
+With this definition of `valid`, we can automatically verify that
+`print` is one-to-one for valid ASTs. Now we can address how to build
+a parser from our specification. It may be possible to synthesize the
+rules for our parser in a language like OMeta. For our prototype we
+used a simpler search-based approach: for each input, we search for a
+valid AST whose printing equals the input. Since our printer is
+one-to-one, we are guaranteed to only find one such AST. The code for
+our parser is:
 
 ```haskell
-"1 + 2 + 3" == Add (Add (Num 1) (Num 2)) (Num 3)
-"1 + 2 - 3" == Add (Sub (Num 1) (Num 2)) (Num 3)
-"1 + 2 * 3" == Add (Mul (Num 1) (Num 2)) (Num 3)
-"1 + 2 / 3" == Add (Div (Num 1) (Num 2)) (Num 3)
-...
+parses [TInt n] = [N n]
+parses [TAst ast] = [ast]
+parses s = [p | i <- findOps s
+              , l <- parses $ take i s
+              , r <- parses $ drop (i+1) s
+              , let o = op (s!!i)
+              , let p = o l r
+              , valid p]
 ```
 
-Suppose now that we've established that all operations are
-left-associative. Precedence of addition and multiplication.
+The `parses` function takes as input a preprocessed list of tokens and
+ASTs, and returns a list of ASTs. The preprocessor has recursively
+parsed parenthesized expressions, and guaranteed that parentheses
+remain.  The implementation of `parses` uses a divide and conquer
+search. The first case maps a singleton list containing an Integer
+token to a single list containing an Integer AST node. The second case
+returns an embedded AST directly. The third case tries to construct
+operator nodes. First, it selects an operator token at position `i`,
+and parses the left and right operands. Then we lookup up the AST
+constructor `o` corresponding to the operator at position `i`, and
+construct a parse `p` from the left and right subtrees. Finally, we
+ensure that our ast is valid. The parse trees are constructed to
+guarantee that they print to the input string. The fact that `print`
+is one-to-one ensures that at most one such AST exists.
 
-```haskell
-"1 + 2 * 3" == Add (...) (...)
-"1 + 2 * 3" == Mul (...) (...)
-```
+This parser was written by hand, but one could imagine automatically
+synthesizing something similar from the specification. Though we
+haven't benchmarked the parser or compared it with other approaches,
+it does perform reasonably well even for large expressions. On a
+randomly generated input string 4755 characters long, parse time was
+under a second. One important feature of most parsers is to localize
+and report syntax errors. We haven't made any attempt to do this
+yet. If a parse fails, the parser will give no indication of the
+reason.
 
-Here the ellipses indicate a folded GUI widget.  One difference
-between these options is clear just by considering the constructors
-(Add and Mul).  The user could expand the widgets to explore the
-choices further before making a choice.  In this example, we can make
-a choice immediately: multiplication should take precedence over
-addition, so we select the first example (`Add` at the root indicates
-it has lower precedence).  This causes the (unfolded) example to be
-added to the specification.
+This example demonstrates that twenty questions is not necessarily
+limited to discovery, but could be useful for more general forms of
+program synthesis. Our goal for our parser synthesis tool was to
+abstract away the tricky implementation techniques commonly used to
+eliminate left-recursion, and establish the precedence and
+associativity rules of the language. Instead, we use an interactive
+question and answer protocol, in which the system automatically
+detects ambiguities in our specification and asks example-based
+questions to resolve them. In future work, we could attempt to
+automatically synthesize the code we wrote by hand, find more
+efficient implementation techniques, and implement error localization
+and reporting.
 
-```haskell
-"1 + 2 * 3" == Add (Num 1) (Mul (Num 2) (Num 3))
-```
 
-As we did for associativity, we can manually generalize this rule to
-other operators:
-
-```haskell
-"1 ([+-]) 2 ([*/]) 3" == <1> (Num 1) (<2> (Num 3) (Num 3))
-```
-
-Again, the symbols `<1>` and `<2>` denote variables whose values
-should be determined by the first and second groups in the regex,
-respectively.  This would expand to:
-
-```haskell
-"1 + 2 * 3" == Mul (Add (Num 1) (Num 2)) (Num 3)
-"1 + 2 / 3" == Div (Add (Num 1) (Num 2)) (Num 3)
-"1 - 2 * 3" == Mul (Sub (Num 1) (Num 2)) (Num 3)
-"1 - 2 / 3" == Div (Sub (Num 1) (Num 2)) (Num 3)
-```
-
-Now we have have two conflicting constraints:
-
-```haskell
-"1 ([+/*-]) 2 ([+/*-]) 3" == <2> (<1> (Num 1) (Num 2)) (Num 3)
-"1 ([+-]) 2 ([*/]) 3"     == <1> (Num 1) (<2> (Num 2) (Num 3))
-```
-
-The intent is for the second to override the first.  One way to
-achieve this is to track the order in which constraints are
-listed. The second constraint should take precedence over the first
-because it came later in the specification.  Alternatively, we can
-view the second as more specific than the first, and say that more
-specific constraints take precedence over more general ones.
-Formalizing this notion of specificity would require careful thought.
-
-Our last constraint lets the user override the precedence with
-parentheses.  The simplest way to specify this is with an example that
-doesn't involve precedence at all:
-
-```haskell
-"\(1\)" == Num 1
-```
-
-When we generalize this constraint, it enforces that parentheses be
-balanced, and that the parse of the text within the parentheses is not
-affected by the outer context.
-
-At this point, we should have a fully specified parser.  The complete
-specification is:
-
-```haskell
-([1-9][0-9]*)   == Num \1
-"1 + 2"         == Add (Num 1) (Num 2)
-"1 - 2"         == Sub (Num 1) (Num 2)
-"1 * 2"         == Mul (Num 1) (Num 2)
-"1 / 2"         == Div (Num 1) (Num 2)
-"1 ([+/*-]) 2 ([+/*-]) 3" == <1> (<2> (Num 1) (Num 2)) (Num 3)
-"1 ([+-]) 2 ([*/]) 3"     == <1> (Num 1) (<2> (Num 2) (Num 3))
-"\(1\)"         == Num 1
-```
-
-From this, a sufficiently powerful synthesis engine (with reasonable
-heuristics built-in) should be able to synthesize the desired parser.
-All without the programmer having to learn tricks for establishing
-associativity and precedence, or dealing with left-recursion.
-
-We can use the same specification to generate a pretty-printer for the
-language that is a right inverse of the parser. Pretty-printer is
-total, but parser is partial.  In particular, parser is defined on any
-output of the pretty printer.
-
-TODO: twenty questions: generate candidates, ask questions. User can
-allow the system to ask the 16 questions to establish precedence
-rules, or can write the single regex rule.
