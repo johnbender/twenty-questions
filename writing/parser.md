@@ -28,6 +28,9 @@ data AST =
   | Div AST AST
 ```
 
+Bootstrapping by Example
+-------------------
+
 We begin by "bootstrapping" our printer and parser by collecting a
 small example for printing each case in our AST type. The first case
 `Num` is special: it is a leaf node containing a single Int
@@ -77,6 +80,9 @@ print (Mul e1 e2) == print e1 ++ "*" ++ print e2
 print (Div e1 e2) == print e1 ++ "/" ++ print e2
 ```
 
+Detecting and Resolving Ambiguities
+-----------------------
+
 These constraints are sufficient to produce a pretty printer for our
 language. However, they do not specify an unambiguous parser. We want
 our parser to be the inverse of a printer. That is, we have the
@@ -96,7 +102,8 @@ value. We can then resolve the ambiguity by asking the user to choose
 which of the two ASTs should be returned by the parser for that input.
 
 <span style="color:red">Q:</span> What is `parse "1+2*3"`? [1/2]
-![Resolving ambiguity](images/parser-ambiguous-choices.png)
+
+<img src="images/parser-ambiguous-choices.png" width=400/>
 
 <span style="color:blue">A:</span> 2
 
@@ -150,11 +157,13 @@ details for clarity. Note also that we can use `Paren` nodes to
 override the precedence and associativity rules imposed by the
 `valid`.
 
-With this definition of `valid`, we can automatically verify that
-`print` is one-to-one for valid ASTs. Now we can address how to build
-a parser from our specification. It may be possible to synthesize the
-rules for our parser in a language like OMeta. For our prototype we
-used a simpler search-based approach: for each input, we search for a
+Generating the Parser
+--------------------
+
+Having restricted the domain to `valid` ASTs, we can automatically verify that
+`print` is one-to-one. Now we can finally consider how to build
+a parser from our specification. For our prototype we
+use a simple search-based approach: for each input, we search for a
 valid AST whose printing equals the input. Since our printer is
 one-to-one, we are guaranteed to only find one such AST. The code for
 our parser is:
@@ -189,8 +198,8 @@ This parser was written by hand, but one could imagine automatically
 synthesizing something similar from the specification. Though we
 haven't benchmarked the parser or compared it with other approaches,
 it does perform reasonably well even for large expressions. On a
-randomly generated input string 4755 characters long, parse time was
-under a second. One important feature of most parsers is to localize
+randomly generated input string 4755 characters long, parsing is still 
+almost instantenous. One important feature of most parsers is to localize
 and report syntax errors. We haven't made any attempt to do this
 yet. If a parse fails, the parser will give no indication of the
 reason.
