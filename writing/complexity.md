@@ -30,6 +30,10 @@ Our solution in implementation is to include information about the "interesting"
 
 Further, if we're going to try to account for all the weird inputs/output pairs a function might have we can only consider polynomially-wierd functions. That is we can't consider functions that are defined as tables of input and output pairs. This doesn't seem to restrictive given that the primary purpose in defining functions is to avoid defining the pairs directly!
 
+## Closing
+
+Ultimately there are a few open avenues for exploring the complexity and power of our interactive process but nothing immediately presents itself as an obvious characterization
+
 ### Footnotes
 
 1. http://en.wikipedia.org/wiki/Type_inhabitation
