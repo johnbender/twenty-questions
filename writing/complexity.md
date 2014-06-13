@@ -28,6 +28,8 @@ At first, this fact appears discouraging but it predicts the issues that we even
 
 Our solution in implementation is to include information about the "interesting" inputs/outputs for a given function in the process of generating discriminating inputs for a set of candidates. Similarly we might consider as part of the input (or even the proof!) to our verifier a small set of important inputs or input ranges to query so that we can be sure the proof behaves as we expect. It remains unclear where this normalizing set of input ranges should live and how we should go about using it.
 
+Further, if we're going to try to account for all the weird inputs/output pairs a function might have we can only consider polynomially-wierd functions. That is we can't consider functions that are defined as tables of input and output pairs. This doesn't seem to restrictive given that the primary purpose in defining functions is to avoid defining the pairs directly!
+
 ### Footnotes
 
 1. http://en.wikipedia.org/wiki/Type_inhabitation
